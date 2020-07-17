@@ -1,7 +1,18 @@
 # Morph Ovum
-==============
 
-# TL;DR: QuitStart Guide
+Morph Ovum is your free community radio service.
+
+* No sound card and no GUI required; debian-based VPS is enough
+* HTTP streams your radio's audio
+* Plays anything [VLC Media Player](https://www.videolan.org/vlc/) can play
+* Provides an API for real time interaction; based on [Flash-RESTful](https://flask-restful.readthedocs.io/en/latest/index.html)
+* 3 audio sources:
+  * Music (*e.g. smooth jazz*)
+  * Ambience (*e.g. distant thunderstorms*)
+  * Clips: Approximately every n minutes, play an audio clip (*e.g. "you're listening to morph ovum!"*)
+
+
+## TL;DR: QuickStart Guide
 ```
 docker pull dud1337/morphovum
 docker run -e TZ=Europe/Zurich -it -p 8138:8138 -p 8139:8139 \
@@ -12,14 +23,12 @@ docker run -e TZ=Europe/Zurich -it -p 8138:8138 -p 8139:8139 \
   dud1337/morphovum
 ```
 
-## Resources:
-----------
+### Resources:
 * [VLC api](https://www.olivieraubert.net/vlc/python-ctypes/doc/)
 * [decorator](https://github.com/micheles/decorator/blob/master/docs/documentation.md)
 
-## Requirements:
--------------
-Usually obtained in the docker instance. See `requirements.txt`
+### Requirements:
+Obtained by docker container automatically. See `requirements.txt`
 * `decorator`
 * `flask_limiter`
 * `flask_restful`
@@ -27,33 +36,10 @@ Usually obtained in the docker instance. See `requirements.txt`
 * `pyyaml`
 * `requests`
 
-## To Do:
-----------
-0. Decide on a name for the software!
- 1. Something descriptive and unique
- 2. "web radio"
-
-1. FOSS Example audio files
- 1. ~3 songs (At least one of Matt's)
- 2. 2 ambience (rain, fire) **[OK]**
- 3. ~3 clips
-
-2. Nicer layout of config.
- 1. Ridiculous ASCII splash required
-
-3. *config validation*
- 1. MRL validation?
- 2. Make interface validator stuff (open a port, see if it breaks?)
-
-4. Unify comment style
-
-5. Documentation
-
 ## Mini-Doc:
----------------
 ### Primary
 * `src/config.yaml` - player instance config file
-* `src/main.py` - main file to run
+* `src/main.py` - file to run to start Morph Ovum
 * `src/io_functions.py` - Handles user input
 * `src/player_backend.py` - defines audio players classes, threads, and their functions
 * `src/flask_resources.py` - generate Flask Resources from io functions
@@ -63,11 +49,10 @@ Usually obtained in the docker instance. See `requirements.txt`
 * `test_flask.py` - For testing certain flask things
 
 ## Sample Media:
-------------
 1. Ambience:
- * [icmusic - Thunderstorm 1](https://freesound.org/people/icmusic/sounds/37564/)
- * [lurpsis - Life Fireplace](https://freesound.org/people/lurpsis/sounds/444127/)
+  * [icmusic - Thunderstorm 1](https://freesound.org/people/icmusic/sounds/37564/)
+  * [lurpsis - Life Fireplace](https://freesound.org/people/lurpsis/sounds/444127/)
 2. Music:
- * ...
+  * ...
 3. Clips:
- * ...
+  * ...
