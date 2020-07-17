@@ -1,0 +1,67 @@
+# admin_password - Sets password for admin commands
+# 
+admin_password: changeme
+
+# interface = the interface to host on
+# stream_port = the tcp port to stream audio from
+# io_port = the tcp port to send commands to VLCRadio
+# 
+# Defaults:
+#   interface: 0.0.0.0
+#   stream_port: 8138
+#   io_port = 8139
+interface   : 0.0.0.0
+stream_port : 8138
+io_port     : 8139
+
+# Which players are on initially
+#
+# Defaults:
+#startup_players:
+#   music     : true
+#   ambience  : true
+#   clips     : true
+startup_players:
+  music     : true
+  ambience  : true
+  clips     : true
+
+# Where the dirs are stored on disk
+#
+# Defaults:
+#audio_dirs:
+#  music     : /fm/music
+#  ambience  : /fm/ambience
+#  clips     : /fm/clips
+#playlist_dir: /fm/playlists
+audio_dirs:
+  music     : /fm/music
+  ambience  : /fm/ambience
+  clips     : /fm/clips
+playlist_dir: /fm/playlists
+
+# Initial Media
+# Files, Directories, Youtube links, anything VLC can open
+#
+# Defaults:
+#default_files:
+#  music     : fm/music
+#  ambience  : fm/ambience
+#
+# Examples:
+#  music     : https://www.youtube.com/watch?v=jT-qjyJKtzU
+#  music     : fm/playlist/myplaylist.m3u
+default_files:
+  music     : /fm/music
+  ambience  : /fm/ambience
+
+# Clips play every N minutes with a certain random element
+# Gaussian. Describe this better.
+#
+# Defaults:
+#clip_timing:
+#  clip_mean:            90   # mean minutes between audio clips <int> > 0
+#  clip_std_deviation:   15   # minutes variance between audio clips <int> >= 0 
+clip_timing:
+  clip_mean           : 90
+  clip_std_deviation  : 15
