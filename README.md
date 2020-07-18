@@ -59,8 +59,17 @@ curl http://127.0.0.1:8139/ambience/current/playlist
 ## API Reference
 | Resource | Function |
 | ------ | ------ |
-| `/music/ls/<directory>` | List the files available in a directory |
-| cell | cell | 
+| `/music/ls/<directory>` | List the music files available in a subdirectory of the music directory |
+| `/music/lsp/<file or directory>` | Play the music file or contents of a subdirectory of the music directory |
+| `/music/lsc/<file or directory>` | Enqueue the music file or contents of a subdirectory of the music directory |
+| `/music/wp/<web resource>` | Play the web resource (*e.g. YouTube URL*) |
+| `/music/current/track` | Get the currently playing music track |
+| `/music/current/playlist` | Get the current music playlist |
+| `/music/skip` | Goes to the next queued music track |
+| `/music/toggle` | Toggle playback of the music player |
+| `/music/history` | Return the last played music (up to 100) |
+| `/ambience/<as above>` | All above music functions apply to the ambience player |
+| 
 
 ## Reference
 * Sample Media Sources

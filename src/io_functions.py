@@ -145,6 +145,12 @@ class InputHandler:
         history = getattr(self.audio_players, 'history_' + music_or_ambience)
         return {'msg':'ok! ' + str(len(history)) + ' tracks in history', 'data':history}
 
+    #
+    #   API Definitions
+    #
+    #       music_ls -> /music/ls or /music/ls/<directory>
+
+    #   Music Player API
     @api
     def music_ls(self, directory='.'):
         return self.ls_funcs(directory, 'music', 'ls')
@@ -184,6 +190,39 @@ class InputHandler:
         return self.player_toggle('music')
 
     @api
+    def music_current_track(self):
+        return self.current_funcs('music', 'track')
+
+    @api
+    def music_current_playlist(self):
+        return self.current_funcs('music', 'playlist')
+
+    @api
+    def music_playlists(self, playlist=''):
+        '''Lists available playlists'''
+        playlists = sorted(os.listdir(self.audio_players.config_data['playlist_dir']))
+        return {'msg':'ok! returned ' + str(len(playlists)) + ' playlists', 'data':playlists}
+
+    @admin
+    @api
+    @patience
+    def music_playlist(self, playlist=''):
+        '''Plays a playlist from available playlists.
+        An int n input will play the nth playlist'''
+        try:
+            playlist_number = int(playlist)
+            playlist = sorted(os.listdir(self.audio_players.config_data['playlist_dir']))[playlist_number]
+            
+        except:
+            path = os.path.join(self.audio_players.config_data['playlist_dir'], playlist)
+
+            if not os.path.isfile(path):
+                return {'err':'"' + directory + '" is not a file'}
+            else:
+                player_backend.modify_media_list(path, self.audio_players.ml_music)
+                return {'msg':'ok! music set to: ' + playlist}
+
+    @api
     def ambience_ls(self, directory='.'):
         return self.ls_funcs(directory, 'ambience', 'ls')
 
@@ -219,6 +258,18 @@ class InputHandler:
     def ambience_toggle(self):
         return self.player_toggle('ambience')
 
+    @api
+    def ambience_current_track(self):
+        return self.current_funcs('ambience', 'track')
+
+    @api
+    def ambience_current_playlist(self):
+        return self.current_funcs('ambience', 'playlist')
+
+    @api
+    def ambience_history(self):
+        return self.history_funcs('ambience')
+
     @admin
     @api
     def clips_toggle(self): 
@@ -236,52 +287,3 @@ class InputHandler:
         now = datetime.datetime.today()
         self.audio_players.clips_thread.clip_schedule = now
         return {'msg':'ok! clip scheduled for ' + str(now)}
-
-    @api
-    def music_current_track(self):
-        return self.current_funcs('music', 'track')
-
-    @api
-    def music_current_playlist(self):
-        return self.current_funcs('music', 'playlist')
-
-    @api
-    def ambience_current_track(self):
-        return self.current_funcs('ambience', 'track')
-
-    @api
-    def ambience_current_playlist(self):
-        return self.current_funcs('ambience', 'playlist')
-
-    @api
-    def music_history(self):
-        return self.history_funcs('music')
-
-    @api
-    def ambience_history(self):
-        return self.history_funcs('ambience')
-
-    @api
-    def music_playlists(self, playlist=''):
-        '''Lists available playlists'''
-        playlists = sorted(os.listdir(self.audio_players.config_data['playlist_dir']))
-        return {'msg':'ok! returned ' + str(len(playlists)) + ' playlists', 'data':playlists}
-
-    @admin
-    @api
-    @patience
-    def music_playlist(self, playlist=''):
-        '''Plays a playlist from available playlists.
-        An int n input will play the nth playlist'''
-        try:
-            playlist_number = int(playlist)
-            playlist = sorted(os.listdir(self.audio_players.config_data['playlist_dir']))[playlist_number]
-            
-        except:
-            path = os.path.join(self.audio_players.config_data['playlist_dir'], playlist)
-
-            if not os.path.isfile(path):
-                return {'err':'"' + directory + '" is not a file'}
-            else:
-                player_backend.modify_media_list(path, self.audio_players.ml_music)
-                return {'msg':'ok! music set to: ' + playlist}
