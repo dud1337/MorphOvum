@@ -5,23 +5,28 @@ MAINTAINER Dudley Grant <grant@dud.li>
 USER root
 EXPOSE 8138 8139
 
-# VLC & Pulse Audiot
+# Install VLC & Pulse Audio
 RUN apt update && apt install -y vlc python3-pip
 
 # Prepare base directory
 RUN mkdir /fm
+
 # Python 3 depenendcies
 COPY requirements.txt /fm/requirements.txt
 RUN pip install -r /fm/requirements.txt
 
-# provide morphovum source code
+# Provide morphovum source code
 ADD src /fm/src
 
+# Prepare subdirectories
 RUN mkdir /fm/ambience /fm/clips /fm/music /fm/playlists
 RUN chown pulseaudio:pulseaudio -R /fm \
 	&& chmod 775 -R /fm
+
+# Sync time
 RUN date
 
+# Switch user, prepare Pulse Audio virtual sink and run Morph Ovum
 USER pulseaudio
 WORKDIR "/fm/src"
 ENTRYPOINT pulseaudio -D \

@@ -148,18 +148,20 @@ The API listens by default on http://127.0.0.1:8139 if ran via the above docker 
 
 ### Python Requirements
 Obtained by docker container automatically. See `requirements.txt`.
-* `decorator`
-* `flask_limiter`
-* `flask_restful`
-* `python-vlc`
-* `pyyaml`
-* `requests`
+```
+decorator
+flask_limiter
+flask_restful
+python-vlc
+pyyaml
+requests
+```
 
 ### Files
 | File | Purpose |
 | ------ | ------ |
-| `src/config.yaml` | player instance configuration file |
-| `src/main.py` | file to run to start Morph Ovum |
+| `src/config.yaml` | Player instance configuration file |
+| `src/main.py` | File to run to start Morph Ovum |
 | `src/io_functions.py` | Handles user input |
 | `src/player_backend.py` | Defines audio players classes, threads, and their functions |
 | `src/flask_resources.py` | Generate Flask Resources from io functions |
