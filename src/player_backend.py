@@ -315,8 +315,8 @@ def media_list_shuffle(media_list):
     media_list_flatten(media_list)
     shuffled_list = []
     
-    shuffled_indexes = range(media_list.count())
-    shuffle(list(shuffled_indexes))
+    shuffled_indexes = list(range(media_list.count()))
+    shuffle(shuffled_indexes)
     for i in range(media_list.count()):
         shuffled_list.append(media_list[shuffled_indexes[i]])
     
