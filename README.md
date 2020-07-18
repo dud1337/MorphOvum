@@ -16,7 +16,7 @@
 
 Morph Ovum is your free and open source community radio service.
 
-* No sound card and no GUI required; a debian-based VPS is enough
+* No sound card and no GUI required
 * 3 audio sources (*all optional*):
   * Music (*e.g. smooth jazz*)
   * Ambience (*e.g. distant thunderstorms*)
@@ -57,28 +57,24 @@ curl http://127.0.0.1:8139/ambience/current/playlist
 ```
 
 ## API Reference
+Flags:
+* `admin`: Requires an admin cookie to be set
+* `patience`: Command is disallowed from being used too frequently (3 second timeout)
+* `busy`: Makes the API busy until the task is complete
+
 | Resource | Flags | Function |
 | ------ | ------ | ------ |
-| `/music/ls/<directory>` | | List the music files available in a subdirectory of the music directory |
-| `/music/lsp/<file or directory>` | admin busy patience | Play the music file or contents of a subdirectory of the music directory |
-| `/music/lsc/<file or directory>` | admin busy patience | Enqueue the music file or contents of a subdirectory of the music directory |
-| `/music/wp/<web resource>` | admin busy patience | Play the web resource (*e.g. YouTube URL*) |
-| `/music/current/track` | | Get the currently playing music track |
-| `/music/current/playlist` | | Get the current music playlist |
-| `/music/skip` | admin busy patience | Goes to the next queued music track |
-| `/music/toggle` | admin patience | Toggle playback of the music player |
-| `/music/history` | | Return the last played music (up to 100) |
+| `/music/ls/<directory>` `/ambience/ls/<directory>`| | List the music files available in a subdirectory of the music or ambience directory |
+| `/music/lsp/<file or directory>` `/ambience/lsp/<file or directory>` |  admin busy patience | Play music file or contents of a subdirectory of the ambience directory |
+| `/music/lsc/<file or directory>` `/ambience/lsc/<file or directory>` | admin busy patience | Enqueue the file or contents of a subdirectory of the music or ambience directory |
+| `/music/wp/<web resource>` `/ambience/wp/<web resource>` | admin busy patience | Play the web resource (*e.g. YouTube URL*) |
+| `/music/current/track` `/ambience/current/track` | | Get the currently playing music or ambience track |
+| `/music/current/playlist` `/ambience/current/playlist` | | Get the current music or ambience playlist |
+| `/music/skip` `/ambience/skip` | admin busy patience | Goes to the next queued music or ambience track |
+| `/music/toggle` `/ambience/toggle` | admin patience | Toggle playback of the music or ambience player |
+| `/music/history` `/ambience/toggle` | | Return the last played music or ambience files (up to 100) |
 | `/music/playlists` | | Show playlists available | 
 | `/music/playlist/<playlist index or filename>` | admin patience | Plays an available playlist |
-| `/ambience/ls/<directory>` | | List the ambience files available in a subdirectory of the ambience directory |
-| `/ambience/lsp/<file or directory>` | admin busy patience | Play the ambience file or contents of a subdirectory of the ambience directory |
-| `/ambience/lsc/<file or directory>` | admin busy patience | Enqueue the ambience file or contents of a subdirectory of the ambience directory |
-| `/ambience/wp/<web resource>` | admin busy patience | Play the web resource (*e.g. YouTube URL*) |
-| `/ambience/current/track` | | Get the currently playing ambience track |
-| `/ambience/current/playlist` | | Get the current ambience playlist |
-| `/ambience/skip` | admin busy patience | Goes to the next queued ambience track |
-| `/ambience/toggle` | admin patience | Toggle playback of the ambience player |
-| `/ambience/history` | | Return the last played ambience (up to 100) |
 | `/clips/toggle` | admin | Toggle the playing of clips |
 | `/clips/now` | admin patience | Schedule a clip to play immediately |
 
@@ -104,7 +100,7 @@ curl http://127.0.0.1:8139/ambience/current/playlist
     * `pyyaml`
     * `requests`
 * **Files**
-    * `src/config.yaml` - player instance config file
+    * `src/config.yaml` - player instance configuration file
     * `src/main.py` - file to run to start Morph Ovum
     * `src/io_functions.py` - Handles user input
     * `src/player_backend.py` - defines audio players classes, threads, and their functions
