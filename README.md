@@ -147,7 +147,7 @@ The API listens by default on http://127.0.0.1:8139 if ran via the above docker 
 * [Flash-RESTful](https://flask-restful.readthedocs.io/en/latest/index.html)
 
 ### Python Requirements
-Obtained by docker container automatically. See `requirements.txt`
+Obtained by docker container automatically. See `requirements.txt`.
 * `decorator`
 * `flask_limiter`
 * `flask_restful`
