@@ -31,7 +31,7 @@ from time import sleep
 from random import choice, normalvariate, shuffle
 
 os.environ['PULSE_SINK'] = 'virtual'
-Debug = False
+Debug = True
 
 def eprint(*args, **kwargs):
     print(*args, file=sys.stderr, **kwargs)

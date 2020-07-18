@@ -1,0 +1,30 @@
+<VirtualHost *:80>
+	ServerName morphovum.example.tld
+	Redirect permanent / https://morphovum.example.tld
+</VirtualHost>
+
+<VirtualHost *:443>
+	ServerName morphovum.example.tld
+
+    SSLEngine on
+	SSLProtocol all -SSLv2 -SSLv3
+	SSLHonorCipherOrder on
+	SSLCipherSuite "EECDH+ECDSA+AESGCM EECDH+aRSA+AESGCM EECDH+ECDSA+SHA384 EECDH+ECDSA+SHA256 EECDH+aRSA+SHA384 EECDH+aRSA+SHA256 EECDH+aRSA+RC4 EECDH EDH+aRSA RC4 !aNULL !eNULL !LOW !3DES !MD5 !EXP !PSK !SRP !DSS"
+
+	SSLCertificateFile      ...
+	SSLCertificateKeyFile   ...
+	SSLCACertificateFile    ...
+
+	SSLProxyEngine on
+
+	RequestHeader set X-Forwarded-Proto "https"
+
+	ProxyPass /live http://127.0.0.1:8138
+	ProxyPassReverse /live http://127.0.0.1:8138
+
+	ProxyPass	/airsonic	http://127.0.0.1:8910/airsonic
+	ProxyPassReverse /airsonic http://127.0.0.1:8910/airsonic
+
+	ProxyPass / http://127.0.0.1:8139/
+	ProxyPassReverse / http://127.0.0.1:8139/
+</VirtualHost>

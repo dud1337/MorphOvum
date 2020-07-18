@@ -1,6 +1,6 @@
 FROM jess/pulseaudio
 
-MAINTAINER Dudley Grant <grant@dud.li>
+MAINTAINER dud1337 <grant@dud.li>
 
 #            █████            
 #         ███     ███         

@@ -79,7 +79,7 @@ playlist_dir: /fm/playlists
 #     ambience  : fm/ambience
 #
 default_files:
-  music     : /fm/music
+  music     : https://www.youtube.com/watch?v=jT-qjyJKtzU
   ambience  : /fm/ambience
 
 # 6. Clip Timing.

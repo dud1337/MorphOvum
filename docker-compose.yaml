@@ -1,4 +1,4 @@
-version: '0.4'
+version: '0.8'
 services:
   morphovum:
     #    image: dud1337/morphovum
