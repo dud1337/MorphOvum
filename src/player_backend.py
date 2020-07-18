@@ -18,6 +18,8 @@
 ######################################################################
 from __future__ import print_function
 import vlc
+#   "media list player is a layer of inconvenience that you're better off not using"
+#               - anon, #VideoLAN:matrix.org #videolan at freenode or irc.videolan.org
 import os
 import re
 import sys
@@ -27,14 +29,9 @@ import socket
 from threading import Thread
 from time import sleep
 from random import choice, normalvariate, shuffle
-#
-#   "media list player is a layer of inconvenience that you're better off not using"
-#               - anon, #VideoLAN:matrix.org #videolan at freenode or irc.videolan.org
-#
 
 os.environ['PULSE_SINK'] = 'virtual'
 Debug = False
-
 
 def eprint(*args, **kwargs):
     print(*args, file=sys.stderr, **kwargs)
