@@ -89,7 +89,7 @@ class InputHandler:
         if not os.path.isdir(path):
             return {'err':'"' + directory + '" is not a directory'}
         if ls_type == 'ls':
-            return {'msg':'ok! got conents of ' + directory + ' directory', 'data':os.listdir(path)}
+            return {'msg':'ok! got conents of ' + directory + ' directory', 'data':sorted(os.listdir(path))}
         elif ls_type == 'lsp': 
             player_backend.modify_media_list(path, getattr(self.audio_players, 'ml_' + music_or_ambience))
             return {'msg':'ok! ' + music_or_ambience + ' set to: ' + directory}
