@@ -35,8 +35,8 @@ Morph Ovum is your free and open source community radio service.
 ```
 docker pull dud1337/morphovum
 docker run -e TZ=Europe/Zurich -it -p 8138:8138 -p 8139:8139 \
-  --mount type=bind,source="$(pwd)"/samples/ambience/,target=/fm/ambience \
   --mount type=bind,source="$(pwd)"/samples/music,target=/fm/music \
+  --mount type=bind,source="$(pwd)"/samples/ambience/,target=/fm/ambience \
   --mount type=bind,source="$(pwd)"/samples/clips,target=/fm/clips \
   --mount type=bind,source="$(pwd)"/samples/playlists/,target=/fm/playlists/ \
   dud1337/morphovum
@@ -56,8 +56,32 @@ curl http://127.0.0.1:8139/ambience/current/playlist
 {"msg": "ok!", "data": ["ambience/icmusic__thunderstorm_short.mp3", "ambience/lurpsis__lit_fireplace.mp3"]}
 ```
 
+## Media Directories
+**Docker**
+```
+  --mount type=bind,source=/path/to/your/music,target=/fm/music \ 
+  --mount type=bind,source=/path/to/your/ambience,target=/fm/ambience \
+  --mount type=bind,source=/path/to/your/clips,target=/fm/clips \
+  --mount type=bind,source=/path/to/your/playlists,target=/fm/playlists/
+```
+**Python config.yaml**
+```
+audio_dirs:
+  music     : /path/to/your/music
+  ambience  : /path/to/your/ambience
+  clips     : /path/to/your/clips
+playlist_dir: /path/to/your/playlists
+```
+
+| Directory | Purpose |
+| ------ | ------ |
+| music | Stores your music collection |
+| ambience | Stores your ambience collection |
+| clips | Stores your clips |
+| playlists | Stores your playlists usually consisting of files in `music` directory or network resources |
+
 ## API Reference
-The API listens by default on http://127.0.0.1:8139.
+The API listens by default on http://127.0.0.1:8139 if ran via the above docker commands.
 
 **POST requests**
 
