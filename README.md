@@ -13,7 +13,15 @@
        ███         ███       
 v0.1      █████████  20200718
 ```
+## Table of Contents
+* [About](#about)
+* [TL;DR: Quickstart Guide](#tldr-quickstart-guide)
+* [Media Directories](#media-directories)
+* [API Documentation](#api-documentation)
+* [Reference](#reference)
 
+
+## About
 Morph Ovum is your free and open source community radio service.
 
 * No sound card and no GUI required
@@ -30,11 +38,6 @@ Morph Ovum is your free and open source community radio service.
   * A YouTube playlist
   * ...
 
-## Table of Contents
-* [TL;DR: Quickstart Guide](#tldr-quickstart-guide)
-* [Media Directories](#media-directories)
-* [API Documentation](#api-documentation)
-* [Reference](reference)
 
 ## TL;DR: Quickstart Guide
 1. To start your Morph Ovum server, run
@@ -85,6 +88,7 @@ playlist_dir: /path/to/your/playlists
 | ambience | Stores your ambience collection |
 | clips | Stores your clips |
 | playlists | Stores your playlists usually consisting of files in `music` directory or network resources |
+
 
 ## API Documentation
 The API listens by default on http://127.0.0.1:8139 if ran via the above docker commands.
