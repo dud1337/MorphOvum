@@ -45,11 +45,11 @@ Morph Ovum is your free and open source community radio service.
 
 
 ## TL;DR: Quickstart Guide
-1. To start your Morph Ovum server, run
+1. To start your Morph Ovum server run
 ```
 docker-compose up
 ```
-2. To listen, play `http://127.0.0.1:8138` in your preferred media player
+2. To listen play `http://127.0.0.1:8138` in your preferred media player
 ```
 mpv http://127.0.0.1:8138
 ```
@@ -80,8 +80,12 @@ curl -b /tmp/cookie http://127.0.0.1:8139/music/wp/https://www.youtube.com/watch
 {"msg": "ok! music playing https://www.youtube.com/watch?v=rquygdjf0d8"}
 ```
 ## Admin Functionality
-**Docker**
-
+**Docker docker-compose.yaml**
+```
+    environment:
+      - MORPH_OVUM_PASSWORD=changeme
+      - TZ="Europe/Zurich"
+```
 **Python config.yaml**
 ```yaml
 # 1. Administration.
@@ -91,8 +95,7 @@ admin_password: changeme
 ```
 
 To create an admin session the user sends a POST request to /admin resource on the API is sent with the SHA256 
-hash of the set password. See the [API Documentation](#api-documentation) and [Quickstart Guide](#tldr-quickstart-guide) 
-for usage details.
+hash of the set password. See the [API Documentation](#api-documentation) and [Quickstart Guide](#tldr-quickstart-guide) for usage details.
 
 ## Media Directories
 **Docker**

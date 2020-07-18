@@ -47,6 +47,6 @@ WORKDIR "/fm/src"
 ENTRYPOINT pulseaudio -D \
 	&& pacmd load-module module-null-sink sink_name=virtual sink_properties=device.description=virtual \
 	&& pacmd set-default-sink virtual \
-	&& sed -i -r "s/changeme/$MORPHOVUM_PASSWORD/g" /fm/src/config.yaml \
+	&& sed -i -r "s/changeme/$MORPH_OVUM_PASSWORD/g" /fm/src/config.yaml \
 	&& python3 main.py
 

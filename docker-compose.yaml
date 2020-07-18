@@ -14,5 +14,5 @@ services:
       - ./samples/clips:/fm/clips
       - ./samples/playslists:/fm/playlists
     environment:
-      - MORPHOVUM_PASSWORD=changeme
+      - MORPH_OVUM_PASSWORD=changeme
       - TZ="Europe/Zurich"
