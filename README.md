@@ -11,7 +11,7 @@
   ███   (_)\/|_|| | |   ███  
     ███               ███    
        ███         ███       
-          █████████          
+v0.1      █████████  20200718
 ```
 
 Morph Ovum is your free and open source community radio service.
@@ -60,11 +60,13 @@ curl http://127.0.0.1:8139/ambience/current/playlist
 The API listens by default on http://127.0.0.1:8139.
 
 **POST requests**
+
 | Resource | Data | Function |
 | ------ | ------ | ------|
 | `/admin` | `password_hash` | Sent a SHA256 hash of the admin password to obtain an admin session |
 
 **GET requests**
+
 | Resource | Flags | Function |
 | ------ | ------ | ------ |
 | `/admin` | | Check if session has admin credentials |
@@ -83,9 +85,12 @@ The API listens by default on http://127.0.0.1:8139.
 | `/clips/now` | admin patience | Schedule a clip to play immediately |
 
 **Flags**
-* `admin`: Requires an admin cookie to be set
-* `patience`: Command is disallowed from being used too frequently (3 second timeout)
-* `busy`: Makes the API busy until the task is complete
+
+| Flag | Description |
+| ------ | ------ |
+| `admin` | Requires an admin cookie to be set |
+| `patience` | Command is disallowed from being used too frequently (3 second rate limit) |
+| `busy` | Makes the API busy until the task is complete |
 
 
 ## Reference
