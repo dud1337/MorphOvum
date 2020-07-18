@@ -18,8 +18,12 @@ v0.1      █████████  20200718
 * [TL;DR: Quickstart Guide](#tldr-quickstart-guide)
 * [Media Directories](#media-directories)
 * [API Documentation](#api-documentation)
-* [Reference](#reference)
-
+* [Other](#other)
+    * [Sample Media Sources](#sample-media-sources)
+    * [Key Module Documentation](#key-module-documentation)
+    * [Python Requirements](#python-requirements)
+    * [Files](#files)
+    * [Miscellaneous](#miscellaneous)
 
 ## About
 Morph Ovum is your free and open source community radio service.
@@ -103,7 +107,7 @@ The API listens by default on http://127.0.0.1:8139 if ran via the above docker 
 
 | Resource | Flags | Function |
 | ------ | ------ | ------ |
-| `/admin` | | Check if session has admin credentials |
+| `/admin` | | Check if session has admin permissions |
 | `/music/ls/<directory>` `/ambience/ls/<directory>`| | List the music files available in a subdirectory of the music or ambience directory |
 | `/music/lsp/<file or directory>` `/ambience/lsp/<file or directory>` |  admin busy patience | Play music file or contents of a subdirectory of the ambience directory |
 | `/music/lsc/<file or directory>` `/ambience/lsc/<file or directory>` | admin busy patience | Enqueue the file or contents of a subdirectory of the music or ambience directory |
@@ -127,35 +131,42 @@ The API listens by default on http://127.0.0.1:8139 if ran via the above docker 
 | `busy` | Makes the API busy until the task is complete |
 
 
-## Reference
-* **Sample Media Sources**
-    1. Ambience
-        * [icmusic - Thunderstorm 1](https://freesound.org/people/icmusic/sounds/37564/)
-        * [lurpsis - Life Fireplace](https://freesound.org/people/lurpsis/sounds/444127/)
-    2. Music
-        * ...
-    3. Clips
-        * ...
-* **Key Module Documentation**
-    * [VLC api](https://www.olivieraubert.net/vlc/python-ctypes/doc/)
-    * [decorator](https://github.com/micheles/decorator/blob/master/docs/documentation.md)
-    * [Flash-RESTful](https://flask-restful.readthedocs.io/en/latest/index.html)
-* **Python Requirements** (*Obtained by docker container automatically. See `requirements.txt`*)
-    * `decorator`
-    * `flask_limiter`
-    * `flask_restful`
-    * `python-vlc`
-    * `pyyaml`
-    * `requests`
-* **Files**
-    * `src/config.yaml` - player instance configuration file
-    * `src/main.py` - file to run to start Morph Ovum
-    * `src/io_functions.py` - Handles user input
-    * `src/player_backend.py` - defines audio players classes, threads, and their functions
-    * `src/flask_resources.py` - generate Flask Resources from io functions
-    * `requirements.txt` - required python modules to pip install
-    * `Dockerfile` - prepares morph ovum container
-    * `test/req_test.py` - For testing a few requests
-    * `test/test_flask.py` - For testing certain flask things
-* **Miscellaneous**
-    * The name was <del>pilfered</del> inspired by [Heretic 2](https://heretic.fandom.com/wiki/Morph_Ovum_(Spell)).
+## Other
+### Sample Media Sources
+1. Ambience
+    * [icmusic - Thunderstorm 1](https://freesound.org/people/icmusic/sounds/37564/)
+    * [lurpsis - Life Fireplace](https://freesound.org/people/lurpsis/sounds/444127/)
+2. Music
+    * ...
+3. Clips
+    * ...
+
+### Key Module Documentation
+* [VLC api](https://www.olivieraubert.net/vlc/python-ctypes/doc/)
+* [decorator](https://github.com/micheles/decorator/blob/master/docs/documentation.md)
+* [Flash-RESTful](https://flask-restful.readthedocs.io/en/latest/index.html)
+
+### Python Requirements
+Obtained by docker container automatically. See `requirements.txt`
+* `decorator`
+* `flask_limiter`
+* `flask_restful`
+* `python-vlc`
+* `pyyaml`
+* `requests`
+
+### Files
+| File | Purpose |
+| ------ | ------ |
+| `src/config.yaml` | player instance configuration file |
+| `src/main.py` | file to run to start Morph Ovum |
+| `src/io_functions.py` | Handles user input |
+| `src/player_backend.py` | Defines audio players classes, threads, and their functions |
+| `src/flask_resources.py` | Generate Flask Resources from io functions |
+| `requirements.txt` | Required python modules to pip install |
+| `Dockerfile` | Prepares morph ovum container |
+| `test/req_test.py` | For testing a few requests |
+| `test/test_flask.py` | For testing certain flask things |
+
+### Miscellaneous
+* The name was <del>pilfered from</del> inspired by [Heretic 2](https://heretic.fandom.com/wiki/Morph_Ovum_(Spell)).
