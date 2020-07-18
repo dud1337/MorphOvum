@@ -16,11 +16,8 @@ with requests.Session() as s:
     login = s.post(base_url + '/admin', data=data)
     print(login.content)
 
-#    print('Try admin-only command:')
-#    test = s.get(base_url + '/music/lsp')
-
     print('Try admin-only command:')
     test = s.get(base_url + '/clips/now')
 
     print(test.content)
-
+    print(s.cookies)

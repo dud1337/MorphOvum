@@ -16,6 +16,7 @@ v0.1      █████████  20200718
 ## Table of Contents
 * [About](#about)
 * [TL;DR: Quickstart Guide](#tldr-quickstart-guide)
+* [Admin Functionality](#admin-functionality)
 * [Media Directories](#media-directories)
 * [API Documentation](#api-documentation)
 * [Other](#other)
@@ -68,6 +69,36 @@ curl http://127.0.0.1:8139/music/current/track
 curl http://127.0.0.1:8139/ambience/current/playlist
 {"msg": "ok!", "data": ["ambience/icmusic__thunderstorm_short.mp3", "ambience/lurpsis__lit_fireplace.mp3"]}
 ```
+5. To log in as admin with the default password
+```
+printf 'changeme' | sha256sum
+057ba03d6c44104863dc7361fe4578965d1887360f90a0895882e58a6248fc86  -
+curl http://127.0.0.1/admin
+{"msg": "you are not admin", "data": false}
+curl -c /tmp/morphovum_cookie_test -d "password_hash=057ba03d6c44104863dc7361fe4578965d1887360f90a0895882e58a6248fc86" http://127.0.0.1:8139/admin
+{"msg": "ok!"}
+curl -b /tmp/morphovum_cookie_test http://127.0.0.1:8139/admin
+{"msg": "ok! you are admin", "data": true}
+```
+6. To immediately play a YouTube link (note URL encoding `?` -> `%3f`)
+```
+curl -b /tmp/cookie http://127.0.0.1:8139/music/wp/https://www.youtube.com/watch%3fv=rquygdjf0d8
+{"msg": "ok! music playing https://www.youtube.com/watch?v=rquygdjf0d8"}
+```
+## Admin Functionality
+**Docker**
+
+**Python config.yaml**
+```yaml
+# 1. Administration.
+# admin_password: Sets password for admin commands
+# 
+admin_password: changeme
+```
+
+To create an admin session the user sends a POST request to /admin resource on the API is sent with the SHA256 
+hash of the set password. See the [API Documentation](#api-documentation) and [Quickstart Guide](#tldr-quickstart-guide) 
+for usage details.
 
 ## Media Directories
 **Docker**

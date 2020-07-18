@@ -32,7 +32,7 @@ class Admin(Resource):
             dest='password_hash',
             location='form',
             required=True,
-            help='The admin password\'s SHA256 hash'
+            help='The admin passwords SHA256 hash'
         )
         args = parser.parse_args()
         if args.password_hash == self.hashed_pw:
