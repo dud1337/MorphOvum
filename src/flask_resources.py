@@ -1,3 +1,12 @@
+######################################################################
+#
+#   Flask Resource Generation
+#
+#   1. Defines admin login process & Creates admin API resource
+#   2. Provides function to create multiple API resources from InputHandler class methods
+#   3. Provides function to bind API resources to a flask API
+#
+######################################################################
 from flask import session
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
@@ -9,6 +18,12 @@ import datetime
 
 limiter = Limiter(key_func=get_remote_address)
 
+
+######################################################################
+#
+#   1. Defines admin login process & Creates admin API resource
+#
+######################################################################
 def admin_check(func=None, *args, **kwargs):
     '''wraps (via partial) @admin functions in io_functions'''
     if 'admin' in session:
@@ -48,6 +63,12 @@ class Admin(Resource):
         else:
             return {'msg':'you are not admin', 'data':False}
 
+
+######################################################################
+#
+#   2. Provides function to create multiple API resources from InputHandler class methods
+#
+######################################################################
 def rest_resource_generate(func_name, class_instance):
     '''Generate REST resources for an io function
     input: music_lsp
@@ -70,6 +91,12 @@ def rest_resource_generate(func_name, class_instance):
 
     return class_name, rest_url_resources
 
+
+######################################################################
+#
+#   3. Provides function to bind API resources to a flask API
+#
+######################################################################
 def bind_flask_resources(flask_api, class_instance):
     '''Generate Flask RESTful API via methods of InputHandler'''
     for attr_name in dir(class_instance):

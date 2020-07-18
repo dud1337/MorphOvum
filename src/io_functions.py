@@ -1,3 +1,18 @@
+######################################################################
+#
+#   IO Function Handler 
+#
+#   1. Creates decorators to make function flags:
+#       Make function accessible via API (api)
+#       Admin Only (admin)
+#       Backend busy (busy)
+#       Rate limiting (patience)
+#   2. Defines the intput handler class
+#       Takes an AudioPlayers class
+#       Defines meta-functions
+#       Defines functions to be used by the API
+#
+######################################################################
 import os
 import datetime
 import player_backend
@@ -5,6 +20,12 @@ import decorator
 import re
 import requests
 
+
+######################################################################
+#
+#   1. Creates decorators to make function flags:
+#
+######################################################################
 @decorator.decorator
 def busy(func, *args, **kwargs):
     '''Certain commands may take time. In order to avoid multiple
@@ -44,6 +65,12 @@ def api(func):
     func.is_api_method = True
     return func
 
+
+######################################################################
+#
+#   2.  Defines the intput handler class
+#
+######################################################################
 class InputHandler:
     '''The IO functions for the primary AudioPlayers class.
     A Flask RESTful API is defined based on the methods of this class

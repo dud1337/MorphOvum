@@ -1,3 +1,21 @@
+######################################################################
+#
+#   AudioPlayers Functions
+#   
+#   1. Defines config.yaml loader & validation functions
+#   2. Define functions for VLC library classes
+#   3. Define AudioPlayers class
+#       4 VLC Instances
+#           1 Streams the pulse audio virtual sink
+#           3 Audio players that play to the virtual sink
+#               1. Music
+#               2. Ambience
+#               3. Clips
+#       1 ClipsThread
+#   4. Define ClipsThread Thread
+#       Manages clip playing times
+#       
+######################################################################
 from __future__ import print_function
 import vlc
 import os
@@ -15,11 +33,18 @@ from random import choice, normalvariate, shuffle
 #
 
 os.environ['PULSE_SINK'] = 'virtual'
-Debug = True
+Debug = False
+
 
 def eprint(*args, **kwargs):
     print(*args, file=sys.stderr, **kwargs)
 
+
+######################################################################
+#
+#   1. Defines config.yaml loader & validation functions
+#
+######################################################################
 def load_config():
     '''loads config.yaml file
     checks and reports potential errors'''
@@ -212,6 +237,12 @@ def load_config():
     else:
         return instance_conf
 
+
+######################################################################
+#
+#   2. Define functions for VLC library classes
+#
+######################################################################
 def fade_volume_players(players, new_vs, time=2):
     '''fades volume of a list of vlc.MediaPlayer instances
     sample input: [vlc.MediaPlayer(), vlc.MediaPlayer()], [50, 25], time = 3]
@@ -340,6 +371,11 @@ def audio_file_dir_walk(directory, allowed_file_extensions={'mp3','wav'}):
 
     return music_file_list
 
+######################################################################
+#
+#   3. Define AudioPlayers Class
+#
+######################################################################
 class AudioPlayers:
     '''A class of 4 audio players, their playlists
     1: Stream of virtual audio to 127.0.0.1:[streamport]
@@ -454,6 +490,12 @@ class AudioPlayers:
         self.mp_vaudio.stop()
         self.mp_music.get_media_player().audio_set_volume(100)
 
+######################################################################
+#
+#   4. Define ClipsThread Thread
+#       Manages clip playing times
+#
+######################################################################
 class Clips(Thread):
     '''Handles the intermittment playing of sound clips
     Fades down other players for 2 seconds, plays a randomly-selected clip, then fades
