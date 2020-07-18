@@ -2,6 +2,21 @@ FROM jess/pulseaudio
 
 MAINTAINER Dudley Grant <grant@dud.li>
 
+#            █████            
+#         ███     ███         
+#       ███         ███       
+#     ███             ███     
+#   ███                 ███   
+#  ██   ┌┬┐┌─┐┬─┐┌─┐┬ ┬   ██  
+#██     ││││ │├┬┘├─┘├─┤     ██
+#██     ┴ ┴└─┘┴└─┴  ┴ ┴     ██
+#███      _      ._ _      ███
+#  ███   (_)\/|_|| | |   ███  
+#    ███               ███    
+#       ███         ███       
+#          █████████          
+#
+
 USER root
 EXPOSE 8138 8139
 
@@ -26,10 +41,12 @@ RUN chown pulseaudio:pulseaudio -R /fm \
 # Sync time
 RUN date
 
-# Switch user, prepare Pulse Audio virtual sink and run Morph Ovum
+# Switch user, prepare Pulse Audio virtual sink, set admin pw, and run Morph Ovum
 USER pulseaudio
 WORKDIR "/fm/src"
 ENTRYPOINT pulseaudio -D \
 	&& pacmd load-module module-null-sink sink_name=virtual sink_properties=device.description=virtual \
 	&& pacmd set-default-sink virtual \
+	&& sed -i -r "s/changeme/$MORPHOVUM_PASSWORD/g" /fm/src/config.yaml \
 	&& python3 main.py
+

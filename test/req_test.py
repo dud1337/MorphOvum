@@ -1,10 +1,13 @@
 import requests
+import hashlib
+
+password = 'changeme'
 
 port = 8139
 base_url = 'http://127.0.0.1:' + str(port)
 
 data = {
-    'password_hash':'057ba03d6c44104863dc7361fe4578965d1887360f90a0895882e58a6248fc86'
+    'password_hash':hashlib.sha256(password).hexdigest()
 }
 
 with requests.Session() as s:
@@ -20,4 +23,3 @@ with requests.Session() as s:
     test = s.get(base_url + '/clips/now')
 
     print(test.content)
-    print(s.cookies)

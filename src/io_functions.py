@@ -151,6 +151,7 @@ class InputHandler:
     #       music_ls -> /music/ls or /music/ls/<directory>
 
     #   Music Player API
+    @admin
     @api
     def music_ls(self, directory='.'):
         return self.ls_funcs(directory, 'music', 'ls')
@@ -222,6 +223,7 @@ class InputHandler:
                 player_backend.modify_media_list(path, self.audio_players.ml_music)
                 return {'msg':'ok! music set to: ' + playlist}
 
+    @admin
     @api
     def ambience_ls(self, directory='.'):
         return self.ls_funcs(directory, 'ambience', 'ls')

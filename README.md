@@ -47,13 +47,7 @@ Morph Ovum is your free and open source community radio service.
 ## TL;DR: Quickstart Guide
 1. To start your Morph Ovum server, run
 ```
-docker pull dud1337/morphovum
-docker run -e TZ=Europe/Zurich -it -p 8138:8138 -p 8139:8139 \
-  --mount type=bind,source="$(pwd)"/samples/music,target=/fm/music \
-  --mount type=bind,source="$(pwd)"/samples/ambience/,target=/fm/ambience \
-  --mount type=bind,source="$(pwd)"/samples/clips,target=/fm/clips \
-  --mount type=bind,source="$(pwd)"/samples/playlists/,target=/fm/playlists/ \
-  dud1337/morphovum
+docker-compose up
 ```
 2. To listen, play `http://127.0.0.1:8138` in your preferred media player
 ```
@@ -106,7 +100,7 @@ for usage details.
   --mount type=bind,source=/path/to/your/music,target=/fm/music \ 
   --mount type=bind,source=/path/to/your/ambience,target=/fm/ambience \
   --mount type=bind,source=/path/to/your/clips,target=/fm/clips \
-  --mount type=bind,source=/path/to/your/playlists,target=/fm/playlists/
+  --mount type=bind,source=/path/to/your/playlists,target=/fm/playlists
 ```
 **Python config.yaml**
 ```
@@ -139,7 +133,7 @@ The API listens by default on http://127.0.0.1:8139 if ran via the above docker 
 | Resource | Flags | Function |
 | ------ | ------ | ------ |
 | `/admin` | | Check if session has admin permissions |
-| `/music/ls/<directory>` `/ambience/ls/<directory>`| | List the music files available in a subdirectory of the music or ambience directory |
+| `/music/ls/<directory>` `/ambience/ls/<directory>`| admin | List the music files available in a subdirectory of the music or ambience directory |
 | `/music/lsp/<file or directory>` `/ambience/lsp/<file or directory>` |  admin busy patience | Play music file or contents of a subdirectory of the ambience directory |
 | `/music/lsc/<file or directory>` `/ambience/lsc/<file or directory>` | admin busy patience | Enqueue the file or contents of a subdirectory of the music or ambience directory |
 | `/music/wp/<web resource>` `/ambience/wp/<web resource>` | admin busy patience | Play the web resource (*e.g. YouTube URL*) |
