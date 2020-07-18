@@ -4,7 +4,7 @@ port = 8139
 base_url = 'http://127.0.0.1:' + str(port)
 
 data = {
-    'password':'057ba03d6c44104863dc7361fe4578965d1887360f90a0895882e58a6248fc86'
+    'password_hash':'057ba03d6c44104863dc7361fe4578965d1887360f90a0895882e58a6248fc86'
 }
 
 with requests.Session() as s:

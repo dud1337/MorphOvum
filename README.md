@@ -57,13 +57,17 @@ curl http://127.0.0.1:8139/ambience/current/playlist
 ```
 
 ## API Reference
-Flags:
-* `admin`: Requires an admin cookie to be set
-* `patience`: Command is disallowed from being used too frequently (3 second timeout)
-* `busy`: Makes the API busy until the task is complete
+The API listens by default on http://127.0.0.1:8139.
 
+**POST requests**
+| Resource | Data | Function |
+| ------ | ------ | ------|
+| `/admin` | `password_hash` | Sent a SHA256 hash of the admin password to obtain an admin session |
+
+**GET requests**
 | Resource | Flags | Function |
 | ------ | ------ | ------ |
+| `/admin` | | Check if session has admin credentials |
 | `/music/ls/<directory>` `/ambience/ls/<directory>`| | List the music files available in a subdirectory of the music or ambience directory |
 | `/music/lsp/<file or directory>` `/ambience/lsp/<file or directory>` |  admin busy patience | Play music file or contents of a subdirectory of the ambience directory |
 | `/music/lsc/<file or directory>` `/ambience/lsc/<file or directory>` | admin busy patience | Enqueue the file or contents of a subdirectory of the music or ambience directory |
@@ -77,6 +81,11 @@ Flags:
 | `/music/playlist/<playlist index or filename>` | admin patience | Plays an available playlist |
 | `/clips/toggle` | admin | Toggle the playing of clips |
 | `/clips/now` | admin patience | Schedule a clip to play immediately |
+
+**Flags**
+* `admin`: Requires an admin cookie to be set
+* `patience`: Command is disallowed from being used too frequently (3 second timeout)
+* `busy`: Makes the API busy until the task is complete
 
 
 ## Reference

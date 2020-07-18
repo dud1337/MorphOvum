@@ -17,7 +17,7 @@ def admin_check(func=None, *args, **kwargs):
         return {'err':'requires admin privileges'}
 
 class Admin(Resource):
-    '''Handles admin authentication via POST and `password` parameter.
+    '''Handles admin authentication via POST and `password_hash` parameter.
     Checks if session is admin with GET'''
     decorators = [limiter.limit('10 per minute', methods=['POST'])]
     def __init__(self, password):
@@ -28,14 +28,14 @@ class Admin(Resource):
         '''Handles admin login'''
         parser = reqparse.RequestParser()
         parser.add_argument(
-            'password',
-            dest='password',
+            'password_hash',
+            dest='password_hash',
             location='form',
             required=True,
-            help='The admin password'
+            help='The admin password\'s SHA256 hash'
         )
         args = parser.parse_args()
-        if args.password == self.hashed_pw:
+        if args.password_hash == self.hashed_pw:
             session['admin'] = True
             return {'msg':'ok!'}
         else:
