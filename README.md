@@ -85,7 +85,7 @@ playlist_dir: /path/to/your/playlists
 | Directory | Purpose |
 | ------ | ------ |
 | music | Stores your music collection |
-| ambience | Stores your ambience collection |
+| ambience | Stores your ambience collection (*e.g. rainfall, rivers, wind, etcetera*) |
 | clips | Stores your clips |
 | playlists | Stores your playlists usually consisting of files in `music` directory or network resources |
 
