@@ -45,6 +45,26 @@ Morph Ovum is your free and open source community radio service.
 
 
 ## TL;DR: Quickstart Guide
+0. Create a `docker-compose.yaml` file similar to
+```
+version: '3'
+services:
+	morphovum:
+    	image: dud1337/morphovum
+	    stdin_open: true
+	    tty: true
+	    ports:
+			- '8138:8138'
+			- '8139:8139'
+#    	volumes:
+#      		- /path/to/your/music:/fm/music
+#      		- /path/to/your/ambience:/fm/ambience
+#      		- /path/to/your/clips:/fm/clips
+#      		- /path/to/your/playlists:/fm/playlists
+    	environment:
+      		- MORPH_OVUM_PASSWORD=changeme
+      		- TZ="Europe/Zurich"
+```
 1. To start your Morph Ovum server run
 ```
 docker-compose up
@@ -84,7 +104,6 @@ curl -b /tmp/cookie http://127.0.0.1:8139/music/wp/https://www.youtube.com/watch
 ```
     environment:
       - MORPH_OVUM_PASSWORD=changeme
-      - TZ="Europe/Zurich"
 ```
 **Python config.yaml**
 ```yaml
@@ -98,12 +117,13 @@ To create an admin session the user sends a POST request to /admin resource on t
 hash of the set password. See the [API Documentation](#api-documentation) and [Quickstart Guide](#tldr-quickstart-guide) for usage details.
 
 ## Media Directories
-**Docker**
+**Docker docker-compose.yaml**
 ```
-  --mount type=bind,source=/path/to/your/music,target=/fm/music \ 
-  --mount type=bind,source=/path/to/your/ambience,target=/fm/ambience \
-  --mount type=bind,source=/path/to/your/clips,target=/fm/clips \
-  --mount type=bind,source=/path/to/your/playlists,target=/fm/playlists
+    volumes:
+      - /path/to/your/music:/fm/music
+      - /path/to/your/ambience:/fm/ambience
+      - /path/to/your/clips:/fm/clips
+      - /path/to/your/playlists:/fm/playlists
 ```
 **Python config.yaml**
 ```

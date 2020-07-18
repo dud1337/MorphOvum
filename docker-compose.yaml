@@ -1,8 +1,8 @@
-version: '0.8'
+version: '3'
 services:
   morphovum:
-    #    image: dud1337/morphovum
     build: .
+    image: dud1337/morphovum
     stdin_open: true
     tty: true
     ports:
