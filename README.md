@@ -57,19 +57,31 @@ curl http://127.0.0.1:8139/ambience/current/playlist
 ```
 
 ## API Reference
-| Resource | Function |
-| ------ | ------ |
-| `/music/ls/<directory>` | List the music files available in a subdirectory of the music directory |
-| `/music/lsp/<file or directory>` | Play the music file or contents of a subdirectory of the music directory |
-| `/music/lsc/<file or directory>` | Enqueue the music file or contents of a subdirectory of the music directory |
-| `/music/wp/<web resource>` | Play the web resource (*e.g. YouTube URL*) |
-| `/music/current/track` | Get the currently playing music track |
-| `/music/current/playlist` | Get the current music playlist |
-| `/music/skip` | Goes to the next queued music track |
-| `/music/toggle` | Toggle playback of the music player |
-| `/music/history` | Return the last played music (up to 100) |
-| `/ambience/<as above>` | All above music functions apply to the ambience player |
-| 
+| Resource | Flags | Function |
+| ------ | ------ | ------ |
+| `/music/ls/<directory>` | | List the music files available in a subdirectory of the music directory |
+| `/music/lsp/<file or directory>` | admin busy patience | Play the music file or contents of a subdirectory of the music directory |
+| `/music/lsc/<file or directory>` | admin busy patience | Enqueue the music file or contents of a subdirectory of the music directory |
+| `/music/wp/<web resource>` | admin busy patience | Play the web resource (*e.g. YouTube URL*) |
+| `/music/current/track` | | Get the currently playing music track |
+| `/music/current/playlist` | | Get the current music playlist |
+| `/music/skip` | admin busy patience | Goes to the next queued music track |
+| `/music/toggle` | admin patience | Toggle playback of the music player |
+| `/music/history` | | Return the last played music (up to 100) |
+| `/music/playlists` | | Show playlists available | 
+| `/music/playlist/<playlist index or filename>` | admin patience | Plays an available playlist |
+| `/ambience/ls/<directory>` | | List the ambience files available in a subdirectory of the ambience directory |
+| `/ambience/lsp/<file or directory>` | admin busy patience | Play the ambience file or contents of a subdirectory of the ambience directory |
+| `/ambience/lsc/<file or directory>` | admin busy patience | Enqueue the ambience file or contents of a subdirectory of the ambience directory |
+| `/ambience/wp/<web resource>` | admin busy patience | Play the web resource (*e.g. YouTube URL*) |
+| `/ambience/current/track` | | Get the currently playing ambience track |
+| `/ambience/current/playlist` | | Get the current ambience playlist |
+| `/ambience/skip` | admin busy patience | Goes to the next queued ambience track |
+| `/ambience/toggle` | admin patience | Toggle playback of the ambience player |
+| `/ambience/history` | | Return the last played ambience (up to 100) |
+| `/clips/toggle` | admin | Toggle the playing of clips |
+| `/clips/now` | admin patience | Schedule a clip to play immediately |
+
 
 ## Reference
 * **Sample Media Sources**
