@@ -1,67 +1,96 @@
-# admin_password - Sets password for admin commands
+#            █████            
+#         ███     ███         
+#       ███         ███       
+#     ███             ███     
+#   ███                 ███   
+#  ██   ┌┬┐┌─┐┬─┐┌─┐┬ ┬   ██  
+#██     ││││ │├┬┘├─┘├─┤     ██
+#██     ┴ ┴└─┘┴└─┴  ┴ ┴     ██
+#███      _      ._ _      ███
+#  ███   (_)\/|_|| | |   ███  
+#    ███               ███    
+#       ███         ███       
+#          █████████          
+#
+#         Config file
+
+# 1. Administration.
+# admin_password: Sets password for admin commands
 # 
 admin_password: changeme
 
-# interface = the interface to host on
-# stream_port = the tcp port to stream audio from
-# io_port = the tcp port to send commands to VLCRadio
+# 2. Network.
+# interface:    the interface to host the audio stream and io API on
+# stream_port:  the tcp port to stream audio from
+# io_port:      the tcp port to send commands to VLCRadio
 # 
 # Defaults:
 #   interface: 0.0.0.0
 #   stream_port: 8138
 #   io_port = 8139
+#
 interface   : 0.0.0.0
 stream_port : 8138
 io_port     : 8139
 
+# 3. Initial Players.
 # Which players are on initially
+# Setting ambience to false disable ambience initially
+# Any player can be toggled with admin API commands 
 #
 # Defaults:
-#startup_players:
-#   music     : true
-#   ambience  : true
-#   clips     : true
+#   startup_players:
+#     music     : true
+#     ambience  : true
+#     clips     : true
+#
 startup_players:
   music     : true
   ambience  : true
   clips     : true
 
-# Where the dirs are stored on disk
+# 4. Media Directories.
+# Where the media directories are stored on disk
 #
 # Defaults:
-#audio_dirs:
-#  music     : /fm/music
-#  ambience  : /fm/ambience
-#  clips     : /fm/clips
-#playlist_dir: /fm/playlists
+#   audio_dirs:
+#     music     : /fm/music
+#     ambience  : /fm/ambience
+#     clips     : /fm/clips
+#   playlist_dir: /fm/playlists
+# 
 audio_dirs:
   music     : /fm/music
   ambience  : /fm/ambience
   clips     : /fm/clips
 playlist_dir: /fm/playlists
 
-# Initial Media
+# 5. Initial Media.
+# The first media to play upon starting the instance
 # Files, Directories, Youtube links, anything VLC can open
 #
-# Defaults:
-#default_files:
-#  music     : fm/music
-#  ambience  : fm/ambience
-#
 # Examples:
-#  music     : https://www.youtube.com/watch?v=jT-qjyJKtzU
-#  music     : fm/playlist/myplaylist.m3u
+#     music     : https://www.youtube.com/watch?v=jT-qjyJKtzU
+#     music     : fm/playlist/myplaylist.m3u
+#
+# Defaults:
+#   default_files:
+#     music     : fm/music
+#     ambience  : fm/ambience
+#
 default_files:
   music     : /fm/music
   ambience  : /fm/ambience
 
-# Clips play every N minutes with a certain random element
-# Gaussian. Describe this better.
+# 6. Clip Timing.
+# Clips play on average every clip_mean minutes
+# A gaussian distribution determines the variance
 #
 # Defaults:
-#clip_timing:
-#  clip_mean:            90   # mean minutes between audio clips <int> > 0
-#  clip_std_deviation:   15   # minutes variance between audio clips <int> >= 0 
+#   clip_timing:
+#     clip_mean:            90   # mean minutes between audio clips <int> > 0
+#     clip_std_deviation:   15   # minutes variance between audio clips <int> >= 0 
+#
 clip_timing:
   clip_mean           : 90
   clip_std_deviation  : 15

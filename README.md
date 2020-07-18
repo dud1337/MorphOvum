@@ -30,7 +30,7 @@ Morph Ovum is your free and open source community radio service.
   * A YouTube playlist
   * ...
 
-## TL;DR: QuickStart Guide
+## TL;DR: Quickstart Guide
 1. To start your Morph Ovum server, run
 ```
 docker pull dud1337/morphovum
