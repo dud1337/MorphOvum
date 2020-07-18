@@ -63,7 +63,7 @@ curl http://127.0.0.1:8139/ambience/current/playlist
 | cell | cell | 
 
 ## Reference
-* Sample Media Sources
+* **Sample Media Sources**
     1. Ambience
         * [icmusic - Thunderstorm 1](https://freesound.org/people/icmusic/sounds/37564/)
         * [lurpsis - Life Fireplace](https://freesound.org/people/lurpsis/sounds/444127/)
@@ -71,18 +71,18 @@ curl http://127.0.0.1:8139/ambience/current/playlist
         * ...
     3. Clips
         * ...
-* Key Module Documentation
+* **Key Module Documentation**
     * [VLC api](https://www.olivieraubert.net/vlc/python-ctypes/doc/)
     * [decorator](https://github.com/micheles/decorator/blob/master/docs/documentation.md)
     * [Flash-RESTful](https://flask-restful.readthedocs.io/en/latest/index.html)
-* Python Requirements (*Obtained by docker container automatically. See `requirements.txt`*)
+* **Python Requirements** (*Obtained by docker container automatically. See `requirements.txt`*)
     * `decorator`
     * `flask_limiter`
     * `flask_restful`
     * `python-vlc`
     * `pyyaml`
     * `requests`
-* Files
+* **Files**
     * `src/config.yaml` - player instance config file
     * `src/main.py` - file to run to start Morph Ovum
     * `src/io_functions.py` - Handles user input
@@ -92,5 +92,5 @@ curl http://127.0.0.1:8139/ambience/current/playlist
     * `Dockerfile` - prepares morph ovum container
     * `test/req_test.py` - For testing a few requests
     * `test/test_flask.py` - For testing certain flask things
-* Miscellaneous
-    * The name comes from [Heretic 2](https://heretic.fandom.com/wiki/Morph_Ovum_(Spell)).
+* **Miscellaneous**
+    * The name was <del>pilfered</del> inspired by [Heretic 2](https://heretic.fandom.com/wiki/Morph_Ovum_(Spell)).
