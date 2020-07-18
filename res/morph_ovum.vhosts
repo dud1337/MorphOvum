@@ -22,9 +22,6 @@
 	ProxyPass /live http://127.0.0.1:8138
 	ProxyPassReverse /live http://127.0.0.1:8138
 
-	ProxyPass	/airsonic	http://127.0.0.1:8910/airsonic
-	ProxyPassReverse /airsonic http://127.0.0.1:8910/airsonic
-
 	ProxyPass / http://127.0.0.1:8139/
 	ProxyPassReverse / http://127.0.0.1:8139/
 </VirtualHost>
