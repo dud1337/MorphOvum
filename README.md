@@ -30,6 +30,12 @@ Morph Ovum is your free and open source community radio service.
   * A YouTube playlist
   * ...
 
+## Table of Contents
+* [TL;DR: Quickstart Guide](#tldr-quickstart-guide)
+* [Media Directories](#media-directories)
+* [API Documentation](#api-documentation)
+* [Reference](reference)
+
 ## TL;DR: Quickstart Guide
 1. To start your Morph Ovum server, run
 ```
@@ -80,7 +86,7 @@ playlist_dir: /path/to/your/playlists
 | clips | Stores your clips |
 | playlists | Stores your playlists usually consisting of files in `music` directory or network resources |
 
-## API Reference
+## API Documentation
 The API listens by default on http://127.0.0.1:8139 if ran via the above docker commands.
 
 **POST requests**
