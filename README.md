@@ -23,7 +23,7 @@ v0.9      █████████  20200802
     * [Sample Media Sources](#sample-media-sources)
     * [Key Module Documentation](#key-module-documentation)
     * [Python Requirements](#python-requirements)
-    * [Files](#files)
+    * [File Purposes](#file-purposes)
     * [Miscellaneous](#miscellaneous)
 
 
@@ -210,7 +210,7 @@ pyyaml
 requests
 ```
 
-### Files
+### File Purposes
 | File | Purpose |
 | ------ | ------ |
 | `src/config.yaml` | Player instance configuration file |
