@@ -11,7 +11,7 @@
   ███   (_)\/|_|| | |   ███  
     ███               ███    
        ███         ███       
-v0.8      █████████  20200718
+v0.9      █████████  20200802
 ```
 ## Table of Contents
 * [About](#about)
@@ -25,6 +25,7 @@ v0.8      █████████  20200718
     * [Python Requirements](#python-requirements)
     * [Files](#files)
     * [Miscellaneous](#miscellaneous)
+
 
 ## About
 Morph Ovum is your free and open source community radio service.
@@ -99,6 +100,8 @@ curl -b /tmp/morphovum_cookie_test http://127.0.0.1:8139/admin
 curl -b /tmp/cookie http://127.0.0.1:8139/music/wp/https://www.youtube.com/watch%3fv=rquygdjf0d8
 {"msg": "ok! music playing https://www.youtube.com/watch?v=rquygdjf0d8"}
 ```
+
+
 ## Admin Functionality
 **Docker docker-compose.yaml**
 ```
@@ -115,6 +118,7 @@ admin_password: changeme
 
 To create an admin session the user sends a POST request to /admin resource on the API is sent with the SHA256 
 hash of the set password. See the [API Documentation](#api-documentation) and [Quickstart Guide](#tldr-quickstart-guide) for usage details.
+
 
 ## Media Directories
 **Docker docker-compose.yaml**
@@ -185,7 +189,8 @@ The API listens by default on http://127.0.0.1:8139 if ran via the above docker 
     * [icmusic - Thunderstorm 1](https://freesound.org/people/icmusic/sounds/37564/)
     * [lurpsis - Life Fireplace](https://freesound.org/people/lurpsis/sounds/444127/)
 2. Music
-    * ...
+	* "Book of Blade", "Chilli-Dog Dilemma", and "Scratchy Funk" by Krangu
+	* If you want usome of your music to be considered for sample Morph Ovum tracks, please create an issue
 3. Clips
     * Created by [Viewtiful Media](https://www.fiverr.com/viewtifulmedia)
 
