@@ -12,7 +12,7 @@ services:
       - ./samples/music:/fm/music
       - ./samples/ambience:/fm/ambience
       - ./samples/clips:/fm/clips
-      - ./samples/playslists:/fm/playlists
+      - ./samples/playlists:/fm/playlists
     environment:
       - MORPH_OVUM_PASSWORD=changeme
       - TZ="Europe/Zurich"

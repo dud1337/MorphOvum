@@ -187,7 +187,7 @@ The API listens by default on http://127.0.0.1:8139 if ran via the above docker 
 2. Music
     * ...
 3. Clips
-    * ...
+    * Created by [Viewtiful Media](https://www.fiverr.com/viewtifulmedia)
 
 ### Key Module Documentation
 * [VLC api](https://www.olivieraubert.net/vlc/python-ctypes/doc/)
