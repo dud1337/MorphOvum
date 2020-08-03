@@ -190,7 +190,7 @@ The API listens by default on http://127.0.0.1:8139 if ran via the above docker 
     * [lurpsis - Life Fireplace](https://freesound.org/people/lurpsis/sounds/444127/)
 2. Music
 	* "Book of Blade", "Chilli-Dog Dilemma", and "Scratchy Funk" by Krangu
-	* If you you'd like some of your music to be considered for sample Morph Ovum tracks, please create an issue
+	* If you'd like some of your music to be considered for sample Morph Ovum tracks, please create an issue
 3. Clips
     * Created by [Viewtiful Media](https://www.fiverr.com/viewtifulmedia)
 
