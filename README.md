@@ -220,8 +220,10 @@ requests
 | `src/flask_resources.py` | Generate Flask Resources from io functions |
 | `requirements.txt` | Required python modules to pip install |
 | `Dockerfile` | Prepares morph ovum container |
-| `test/req_test.py` | For testing a few requests |
-| `test/test_flask.py` | For testing certain flask things |
+| `docker-compose.yaml` | Morph Ovum container instance configuration |
+| `res/morph_ovum.ascii` | Morph Ovum ASCII art |
+| `res/MorphOvum.gif` | Freeware Morph Ovum gif |
+| `res/morph_ovum.vhosts` | Sample apache2 config |
 
 ### Miscellaneous
 * The name was <del>pilfered from</del> inspired by [Heretic 2](https://heretic.fandom.com/wiki/Morph_Ovum_(Spell)).
