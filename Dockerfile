@@ -31,7 +31,7 @@ COPY requirements.txt /fm/requirements.txt
 RUN pip install -r /fm/requirements.txt
 
 # Provide morphovum source code
-ADD src /fm/src
+ADD src/core /fm/core
 
 # Prepare subdirectories
 RUN mkdir /fm/ambience /fm/clips /fm/music /fm/playlists
@@ -43,10 +43,10 @@ RUN date
 
 # Switch user, prepare Pulse Audio virtual sink, set admin pw, and run Morph Ovum
 USER pulseaudio
-WORKDIR "/fm/src"
+WORKDIR "/fm/core"
 ENTRYPOINT pulseaudio -D \
 	&& pacmd load-module module-null-sink sink_name=virtual sink_properties=device.description=virtual \
 	&& pacmd set-default-sink virtual \
-	&& sed -i -r "s/changeme/$MORPH_OVUM_PASSWORD/g" /fm/src/config.yaml \
+	&& sed -i -r "s/changeme/$MORPH_OVUM_PASSWORD/g" /fm/core/config.yaml \
 	&& python3 main.py
 

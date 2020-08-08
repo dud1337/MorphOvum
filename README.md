@@ -213,14 +213,16 @@ requests
 ### File Purposes
 | File | Purpose |
 | ------ | ------ |
-| `src/config.yaml` | Player instance configuration file |
-| `src/main.py` | File to run to start Morph Ovum |
-| `src/io_functions.py` | Handles user input |
-| `src/player_backend.py` | Defines audio players classes, threads, and their functions |
-| `src/flask_resources.py` | Generate Flask Resources from io functions |
-| `requirements.txt` | Required python modules to pip install |
 | `Dockerfile` | Prepares morph ovum container |
 | `docker-compose.yaml` | Morph Ovum container instance configuration |
+| `requirements.txt` | Required python modules to pip install |
+| `src/core/config.yaml` | Player instance configuration file |
+| `src/core/main.py` | File to run to start Morph Ovum |
+| `src/core/io_functions.py` | Handles user input |
+| `src/core/player_backend.py` | Defines audio players classes, threads, and their functions |
+| `src/core/flask_resources.py` | Generate Flask Resources from io functions |
+| `src/www/index.html` | Web3 frontend main file |
+| `src/www/main.js` | Web3 frontent JavaScript |
 | `res/morph_ovum.ascii` | Morph Ovum ASCII art |
 | `res/MorphOvum.gif` | Freeware Morph Ovum gif |
 | `res/morph_ovum.vhosts` | Sample apache2 config |
