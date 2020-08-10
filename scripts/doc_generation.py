@@ -13,7 +13,7 @@ import io_functions
 api_flags = ['admin', 'busy', 'patience']
 
 api_list = []
-readme_table = '| Resource | Data | Function |\n| ------ | ------ | ------ |\n'
+readme_table = '| Resource | Flags | Function |\n| ------ | ------ | ------ |\n'
 
 for attr_name in dir(io_functions.InputHandler):
     attr = getattr(io_functions.InputHandler, attr_name)

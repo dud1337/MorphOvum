@@ -151,7 +151,7 @@ The API listens by default on http://127.0.0.1:8139 if ran via the above docker 
 
 **POST requests**
 
-| Resource | Data | Function |
+| Resource | Flags | Function |
 | ------ | ------ | ------|
 | `/admin` | `password_hash` | Sent a SHA256 hash of the admin password to obtain an admin session |
 
