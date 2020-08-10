@@ -40,6 +40,12 @@ def busy(func, *args, **kwargs):
         io_instance.busy = False
         return out
 
+def busy_flag(func):
+    '''adds the is_busy_method attribute'''
+    # Need to figure out a way to use decorator.decorator to do this
+    func.is_busy_method = True
+    return func
+
 @decorator.decorator
 def patience(func, *args, **kwargs):
     '''Disallow certain commands being spammed too frequently'''
@@ -54,6 +60,11 @@ def patience(func, *args, **kwargs):
     else:
         io_instance.last_change = now 
         return func(*args, **kwargs)
+
+def patience_flag(func):
+    '''adds the is_patience_method attribute'''
+    func.is_patience_method = True
+    return func
 
 def admin(func):
     '''adds the is_admin_method attribute'''
@@ -172,58 +183,73 @@ class InputHandler:
         history = getattr(self.audio_players, 'history_' + music_or_ambience)
         return {'msg':'ok! ' + str(len(history)) + ' tracks in history', 'data':history}
 
-    #
     #   API Definitions
-    #
-    #       music_ls -> /music/ls or /music/ls/<directory>
-
-    #   Music Player API
     @admin
     @api
     def music_ls(self, directory='.'):
+        '''List the contents of a subdirectory in the music directory'''
         return self.ls_funcs(directory, 'music', 'ls')
 
     @admin
     @api
     @busy
     @patience
-    def music_lsp(self, directory='.'): 
+    def music_lsp(self, directory='.'):
+        '''Play a file or the contents of a subdirectory in the music directory'''
         return self.ls_funcs(directory, 'music', 'lsp')
 
     @admin
     @api
     @busy
+    @busy_flag
     @patience
+    @patience_flag
     def music_lsc(self, directory='.'):
+        '''Enqueue a file or the contents of a subdirectory in the music directory'''
         return self.ls_funcs(directory, 'music', 'lsc')
 
     @admin
     @api
     @busy
+    @busy_flag
     @patience
+    @patience_flag
     def music_wp(self, url):
+        '''Play the web resource in the music player'''
         return self.wp_funcs(url, 'music')
 
     @admin
     @api
     @busy
+    @busy_flag
     @patience
+    @patience_flag
     def music_skip(self):
+        '''Skip the currently playing music track'''
         return self.skip_funcs('music')
 
     @admin
     @api
     @patience
+    @patience_flag
     def music_toggle(self):
+        '''Toggle the playing of the music player'''
         return self.player_toggle('music')
 
     @api
     def music_current_track(self):
+        '''Return the currently playing music track'''
         return self.current_funcs('music', 'track')
 
     @api
     def music_current_playlist(self):
+        '''Return the currently playing music playlist'''
         return self.current_funcs('music', 'playlist')
+
+    @api
+    def music_history(self):
+        '''Returns the last music tracks played (max 100)'''
+        return self.history_funcs('music')
 
     @api
     def music_playlists(self, playlist=''):
@@ -234,9 +260,9 @@ class InputHandler:
     @admin
     @api
     @patience
+    @patience_flag
     def music_playlist(self, playlist=''):
-        '''Plays a playlist from available playlists.
-        An int n input will play the nth playlist'''
+        '''Plays a playlist from available playlists. An int n input will play the nth playlist'''
         try:
             playlist_number = int(playlist)
             playlist = sorted(os.listdir(self.audio_players.config_data['playlist_dir']))[playlist_number]
@@ -253,55 +279,72 @@ class InputHandler:
     @admin
     @api
     def ambience_ls(self, directory='.'):
+        '''List the contents of a subdirectory in the ambience directory'''
         return self.ls_funcs(directory, 'ambience', 'ls')
 
     @admin
     @api
     @busy
+    @busy_flag
     @patience
-    def ambience_lsp(self, directory='.'): 
+    @patience_flag
+    def ambience_lsp(self, directory='.'):
+        '''Play a file or the contents of a subdirectory in the ambience directory'''
         return self.ls_funcs(directory, 'ambience', 'lsp')
 
     @admin
     @api
     @busy
+    @busy_flag
     @patience
+    @patience_flag
     def ambience_lsc(self, directory='.'):
+        '''Enqueue a file or the contents of a subdirectory in the music directory'''
         return self.ls_funcs(directory, 'ambience', 'lsc')
 
     @admin
     @api
     @busy
+    @busy_flag
     @patience
+    @patience_flag
     def ambience_wp(self, url):
+        '''Play the web resource in the ambience player'''
         return self.wp_funcs(url, 'ambience')
 
     @admin
     @api
     def ambience_skip(self):
+        '''Skip the current ambience track'''
         return self.skip_funcs('ambience')
 
     @admin
     @api
     @patience
+    @patience_flag
     def ambience_toggle(self):
+        '''Toggle the playing of the ambience player'''
         return self.player_toggle('ambience')
 
     @api
     def ambience_current_track(self):
+        '''Return the currently playing ambience track'''
         return self.current_funcs('ambience', 'track')
 
     @api
     def ambience_current_playlist(self):
+        '''Return the currently playing ambience playlist'''
         return self.current_funcs('ambience', 'playlist')
 
     @api
     def ambience_history(self):
+        '''Returns up to 100 of the last played tracks for a player'''
         return self.history_funcs('ambience')
 
     @admin
     @api
     def clips_toggle(self): 
+        '''Toggle the playing of clips'''
         self.audio_players.toggle_clips()
         on_off = 'on' if self.audio_players.clips_thread.clips_on else 'off'
         return {'msg':'ok! clips turned ' + on_off}
@@ -309,7 +352,9 @@ class InputHandler:
     @admin
     @api
     @patience
+    @patience_flag
     def clips_now(self):
+        '''Schedule a clip to be played now'''
         if not self.audio_players.clips_thread.clips_on:
             return {'err':'clips not enabled. try /clips/toggle first'}
 

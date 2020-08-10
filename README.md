@@ -157,22 +157,30 @@ The API listens by default on http://127.0.0.1:8139 if ran via the above docker 
 
 **GET requests**
 
-| Resource | Flags | Function |
+| Resource | Data | Function |
 | ------ | ------ | ------ |
-| `/admin` | | Check if session has admin permissions |
-| `/music/ls/<directory>` `/ambience/ls/<directory>`| admin | List the music files available in a subdirectory of the music or ambience directory |
-| `/music/lsp/<file or directory>` `/ambience/lsp/<file or directory>` |  admin busy patience | Play music file or contents of a subdirectory of the ambience directory |
-| `/music/lsc/<file or directory>` `/ambience/lsc/<file or directory>` | admin busy patience | Enqueue the file or contents of a subdirectory of the music or ambience directory |
-| `/music/wp/<web resource>` `/ambience/wp/<web resource>` | admin busy patience | Play the web resource (*e.g. YouTube URL*) |
-| `/music/current/track` `/ambience/current/track` | | Get the currently playing music or ambience track |
-| `/music/current/playlist` `/ambience/current/playlist` | | Get the current music or ambience playlist |
-| `/music/skip` `/ambience/skip` | admin busy patience | Goes to the next queued music or ambience track |
-| `/music/toggle` `/ambience/toggle` | admin patience | Toggle playback of the music or ambience player |
-| `/music/history` `/ambience/toggle` | | Return the last played music or ambience files (up to 100) |
-| `/music/playlists` | | Show playlists available | 
-| `/music/playlist/<playlist index or filename>` | admin patience | Plays an available playlist |
-| `/clips/toggle` | admin | Toggle the playing of clips |
-| `/clips/now` | admin patience | Schedule a clip to play immediately |
+| `/ambience/current/playlist `| | Return the currently playing ambience playlist |
+| `/ambience/current/track `| | Return the currently playing ambience track |
+| `/ambience/history `| | Returns up to 100 of the last played tracks for a player |
+| `/ambience/ls/<directory> `| `admin` | List the contents of a subdirectory in the ambience directory |
+| `/ambience/lsc/<directory> `| `admin` `busy` `patience` | Enqueue a file or the contents of a subdirectory in the music directory |
+| `/ambience/lsp/<directory> `| `admin` `busy` `patience` | Play a file or the contents of a subdirectory in the ambience directory |
+| `/ambience/skip `| `admin` | Skip the current ambience track |
+| `/ambience/toggle `| `admin` `patience` | Toggle the playing of the ambience player |
+| `/ambience/wp/<url> `| `admin` `busy` `patience` | Play the web resource in the ambience player |
+| `/clips/now `| `admin` `patience` | Schedule a clip to be played now |
+| `/clips/toggle `| `admin` | Toggle the playing of clips |
+| `/music/current/playlist `| | Return the currently playing music playlist |
+| `/music/current/track `| | Return the currently playing music track |
+| `/music/history `| | Returns the last music tracks played (max 100) |
+| `/music/ls/<directory> `| `admin` | List the contents of a subdirectory in the music directory |
+| `/music/lsc/<directory> `| `admin` `busy` `patience` | Enqueue a file or the contents of a subdirectory in the music directory |
+| `/music/lsp/<directory> `| `admin` | Play a file or the contents of a subdirectory in the music directory |
+| `/music/playlist/<playlist> `| `admin` `patience` | Plays a playlist from available playlists. An int n input will play the nth playlist |
+| `/music/playlists/<playlist> `| | Lists available playlists |
+| `/music/skip `| `admin` `busy` `patience` | Skip the currently playing music track |
+| `/music/toggle `| `admin` `patience` | Toggle the playing of the music player |
+| `/music/wp/<url> `| `admin` `busy` `patience` | Play the web resource in the music player |
 
 **Flags**
 
