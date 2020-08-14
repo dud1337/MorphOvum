@@ -97,16 +97,38 @@ class InputHandler:
         '''Deals with listing, playing and appending playlists to various functions'''
         path = os.path.join(self.audio_players.config_data['audio_dirs'][music_or_ambience], directory)
 
+        mp = getattr(self.audio_players, 'mp_' + music_or_ambience)
+        ml = getattr(self.audio_players, 'ml_' + music_or_ambience)
+
         if not os.path.isdir(path):
             return {'err':'"' + directory + '" is not a directory'}
         if ls_type == 'ls':
             return {'msg':'ok! got conents of ' + directory + ' directory', 'data':sorted(os.listdir(path))}
         elif ls_type == 'lsp': 
-            player_backend.modify_media_list(path, getattr(self.audio_players, 'ml_' + music_or_ambience))
+            player_backend.modify_media_list(
+                path,
+                ml,
+                mp,
+                switch_current=True
+            )
             return {'msg':'ok! ' + music_or_ambience + ' set to: ' + directory}
         elif ls_type == 'lsc':
-            player_backend.modify_media_list(path, getattr(self.audio_players, 'ml_' + music_or_ambience), append=True)
+            player_backend.modify_media_list(
+                path,
+                ml,
+                mp,
+                append=True,
+                shuffle=False
+            )
             return {'msg':'ok! ' + music_or_ambience + ' appended with: ' + directory}
+        elif ls_type == 'lsa':
+            player_backend.modify_media_list(
+                path,
+                ml,
+                mp,
+                append=True,
+            )
+            return {'msg':'ok! ' + music_or_ambience + ' added and shuffled with: ' + directory}
 
     def wp_funcs(self, url, music_or_ambience, wp_type):
         '''Runs a series of checks, then appends + plays the web media to the playlist'''
@@ -128,12 +150,25 @@ class InputHandler:
         ml = getattr(self.audio_players, 'ml_' + music_or_ambience)
 
         if wp_type == 'wp':
-            player_backend.modify_media_list(url, ml, media_player=mp)
+            player_backend.modify_media_list(
+                url,
+                ml,
+                mp,
+                switch_current=True
+            )
+            track = player_backend.media_list_player_get_song(mp)
+            return {'msg':'ok! ' + music_or_ambience + ' playing: ' + track}
+
         elif wp_type == 'wc':
-            player_backend.modify_media_list(url, ml, media_player=mp, append=True)
-        
-        track = player_backend.media_list_player_get_song(mp)
-        return {'msg':'ok! ' + music_or_ambience + ' playing ' + track}
+            player_backend.modify_media_list(
+                url,
+                ml,
+                mp,
+                append=True,
+                shuffle=False
+            )
+            track = player_backend.media_list_player_get_song(mp)
+            return {'msg':'ok! ' + music_or_ambience + ' enqeued with: ' + track}
 
     def current_funcs(self, music_or_ambience, track_or_playlist):
         '''Returns current song or list of media currently in a player's MediaList'''
@@ -196,7 +231,9 @@ class InputHandler:
     @admin
     @api
     @busy
+    @busy_flag
     @patience
+    @patience_flag
     def music_lsp(self, directory='.'):
         '''Play a file or the contents of a subdirectory in the music directory'''
         return self.ls_funcs(directory, 'music', 'lsp')
@@ -210,6 +247,16 @@ class InputHandler:
     def music_lsc(self, directory='.'):
         '''Enqueue a file or the contents of a subdirectory in the music directory'''
         return self.ls_funcs(directory, 'music', 'lsc')
+
+    @admin
+    @api
+    @busy
+    @busy_flag
+    @patience
+    @patience_flag
+    def music_lsa(self, directory='.'):
+        '''Add and shuffle a file or the contents of a subdirectory in the music directory'''
+        return self.ls_funcs(directory, 'music', 'lsa')
 
     @admin
     @api
@@ -286,7 +333,7 @@ class InputHandler:
             if not os.path.isfile(path):
                 return {'err':'"' + directory + '" is not a file'}
             else:
-                player_backend.modify_media_list(path, self.audio_players.ml_music)
+                player_backend.modify_media_list(path, self.audio_players.ml_music, self.audio_players.mp_music)
                 return {'msg':'ok! music set to: ' + playlist}
 
     @admin
@@ -314,6 +361,16 @@ class InputHandler:
     def ambience_lsc(self, directory='.'):
         '''Enqueue a file or the contents of a subdirectory in the music directory'''
         return self.ls_funcs(directory, 'ambience', 'lsc')
+
+    @admin
+    @api
+    @busy
+    @busy_flag
+    @patience
+    @patience_flag
+    def ambience_lsa(self, directory='.'):
+        '''Add and shuffle a file or the contents of a subdirectory in the ambience directory'''
+        return self.ls_funcs(directory, 'ambience', 'lsa')
 
     @admin
     @api

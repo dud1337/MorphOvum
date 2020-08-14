@@ -324,7 +324,7 @@ def media_list_shuffle(media_list):
     for media in shuffled_list:
         media_list.add_media(media)
 
-def modify_media_list(mrl, media_list, shuffle=True, append=False, switch_current=False, media_player=None):
+def modify_media_list(mrl, media_list, media_player, shuffle=True, append=False, switch_current=False):
     '''For setting a new playlist to a vlc.MediaList, or appending to it.
     Shuffle is enabled by default.'''
     if not append:
@@ -333,7 +333,6 @@ def modify_media_list(mrl, media_list, shuffle=True, append=False, switch_curren
     if os.path.isdir(mrl):
         list_of_media = [vlc.Media(audio_file) for audio_file in audio_file_dir_walk(mrl)]
     else:
-        switch_current = True if media_player else False
         list_of_media = [vlc.Media(mrl)]
 
     for media in list_of_media:
@@ -342,6 +341,7 @@ def modify_media_list(mrl, media_list, shuffle=True, append=False, switch_curren
 
     if shuffle:
         media_list_shuffle(media_list)
+
     if switch_current:
         media_player.play_item(list_of_media[0])
 
@@ -439,17 +439,17 @@ class AudioPlayers:
 
         # music
         if self.config_data['default_files']['music']:
-           modify_media_list(self.config_data['default_files']['music'], self.ml_music)
+           modify_media_list(self.config_data['default_files']['music'], self.ml_music, self.mp_music)
         else:
-           modify_media_list(self.config_data['audio_dirs']['music'], self.ml_music)
+           modify_media_list(self.config_data['audio_dirs']['music'], self.ml_music, self.mp_music)
         self.mp_music.set_playback_mode(vlc.PlaybackMode.loop)
         self.mp_music.get_media_player().audio_set_volume(100)
 
         # ambience
         if self.config_data['default_files']['ambience']:
-            modify_media_list(self.config_data['default_files']['ambience'], self.ml_ambience)
+            modify_media_list(self.config_data['default_files']['ambience'], self.ml_ambience, self.mp_ambience)
         else:
-            modify_media_list(self.config_data['audio_dirs']['ambience'], self.ml_ambience)
+            modify_media_list(self.config_data['audio_dirs']['ambience'], self.ml_ambience, self.mp_ambience)
         self.mp_ambience.set_playback_mode(vlc.PlaybackMode.loop)
         self.mp_ambience.get_media_player().audio_set_volume(75)
 

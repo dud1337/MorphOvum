@@ -95,9 +95,9 @@ curl -c /tmp/morphovum_cookie_test -d "password_hash=057ba03d6c44104863dc7361fe4
 curl -b /tmp/morphovum_cookie_test http://127.0.0.1:8139/admin
 {"msg": "ok! you are admin", "data": true}
 ```
-6. To immediately play a YouTube link (note URL encoding `?` -> `%3f`)
+6. To immediately play a YouTube link
 ```
-curl -b /tmp/cookie http://127.0.0.1:8139/music/wp/https://www.youtube.com/watch%3fv=rquygdjf0d8
+curl -b /tmp/cookie http://127.0.0.1:8139/music/wp/ -d "url=https://www.youtube.com/watch%3fv=rquygdjf0d8"
 {"msg": "ok! music playing https://www.youtube.com/watch?v=rquygdjf0d8"}
 ```
 
@@ -155,13 +155,15 @@ The API listens by default on http://127.0.0.1:8139 if ran via the above docker 
 | ------ | ------ | ------ | ------ |
 | `/admin` | `password_hash` | | Sent a SHA256 hash of the admin password to obtain an admin session |
 | `/ambience/ls` | `directory` | `admin` | List the contents of a subdirectory in the ambience directory |
+| `/ambience/lsa` | `directory` | `admin` `busy` `patience` | Add and shuffle a file or the contents of a subdirectory in the ambience directory |
 | `/ambience/lsc` | `directory` | `admin` `busy` `patience` | Enqueue a file or the contents of a subdirectory in the music directory |
 | `/ambience/lsp` | `directory` | `admin` `busy` `patience` | Play a file or the contents of a subdirectory in the ambience directory |
 | `/ambience/wc` | `url` | `admin` `busy` `patience` | Enqueue the web resource in the ambience player |
 | `/ambience/wp` | `url` | `admin` `busy` `patience` | Play the web resource in the ambience player |
 | `/music/ls` | `directory` | `admin` | List the contents of a subdirectory in the music directory |
+| `/music/lsa` | `directory` | `admin` `busy` `patience` | Add and shuffle a file or the contents of a subdirectory in the music directory |
 | `/music/lsc` | `directory` | `admin` `busy` `patience` | Enqueue a file or the contents of a subdirectory in the music directory |
-| `/music/lsp` | `directory` | `admin` | Play a file or the contents of a subdirectory in the music directory |
+| `/music/lsp` | `directory` | `admin` `busy` `patience` | Play a file or the contents of a subdirectory in the music directory |
 | `/music/playlist` | `playlist` | `admin` `patience` | Plays a playlist from available playlists. An int n input will play the nth playlist |
 | `/music/playlists` | `playlist` | | Lists available playlists |
 | `/music/wc` | `url` | `admin` `busy` `patience` | Enqueue the web resource in the music player |
@@ -182,7 +184,7 @@ The API listens by default on http://127.0.0.1:8139 if ran via the above docker 
 | `/music/current/track` | | Return the currently playing music track |
 | `/music/history` | | Returns the last music tracks played (max 100) |
 | `/music/skip` | `admin` `busy` `patience` | Skip the currently playing music track |
-| `/music/toggle` | `admin` `patience` | Toggle the playing of the music player 
+| `/music/toggle` | `admin` `patience` | Toggle the playing of the music player |
 
 **Flags**
 
