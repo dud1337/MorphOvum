@@ -5,13 +5,14 @@
 #   1. Defines admin login process & Creates admin API resource
 #   2. Provides function to create multiple API resources from InputHandler class methods
 #   3. Provides function to bind API resources to a flask API
+#   4. Define Web UI resources
 #
 ######################################################################
-from flask import session
+from flask import session, make_response
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 from flask_restful import Resource, reqparse
-from inspect import getargspec
+from inspect import getfullargspec
 from hashlib import sha256
 from functools import partial
 import datetime
@@ -69,27 +70,58 @@ class Admin(Resource):
 #   2. Provides function to create multiple API resources from InputHandler class methods
 #
 ######################################################################
-def rest_resource_generate(func_name, class_instance):
+def rest_resource_generate(func_name, func, class_instance):
     '''Generate REST resources for an io function
     input: music_lsp
-    output: 'MusicLsp', ['/music/lsp', '/music/lsp/', '/music/lsp/<directory>', '/music/lsp/<directory>/']
+    output: 'MusicLsp', ['/music/lsp', '/music/lsp/']
     '''
     class_name = ''
     for segment in func_name.split('_'):
         class_name += segment[0].upper() + segment[1::]
 
-    arg_list = getargspec(getattr(class_instance.__class__, func_name))[0]
-    arg_list.remove('self')
-
     rest_url_resources = []
     rest_res = '/' + func_name.replace('_','/')
     rest_url_resources.append(rest_res)
-    if arg_list:
-        for arg in arg_list:
-            rest_res += '/<path:' + arg + '>'
-            rest_url_resources.append(rest_res)
 
-    return class_name, rest_url_resources
+    arg_list = getfullargspec(getattr(class_instance.__class__, func_name))[0]
+    arg_list.remove('self')
+
+    if arg_list:
+        def post_handler():
+            parser = reqparse.RequestParser()
+            for arg in arg_list:
+                parser.add_argument(
+                    arg,
+                    dest=arg,
+                    location='form',
+                    required=True,
+                    help=arg
+                )
+            args = parser.parse_args()
+            
+            return func(**args)
+
+        if hasattr(func, 'is_admin_method'):
+            post_func = partial(admin_check, func=post_handler)
+        else:
+            post_func = post_handler
+        rest_resource_class = type(
+            class_name,
+            (Resource,),
+            dict(post=post_func)
+        )
+    else:
+        if hasattr(func, 'is_admin_method'):
+            post_func = partial(admin_check, func=func)
+        else:
+            post_func = func
+        rest_resource_class = type(
+            class_name,
+            (Resource,),
+            dict(get=post_func)
+        )
+
+    return rest_resource_class, rest_url_resources
 
 
 ######################################################################
@@ -102,18 +134,46 @@ def bind_flask_resources(flask_api, class_instance):
     for attr_name in dir(class_instance):
         attr = getattr(class_instance, attr_name)
         if hasattr(attr, 'is_api_method'): 
-            class_name, rest_url_resources = rest_resource_generate(attr_name, class_instance)
+            tmp_class, rest_url_resources = rest_resource_generate(attr_name, attr, class_instance)
            
-            if hasattr(attr, 'is_admin_method'):
-                tmp_class = type(
-                    class_name,
-                    (Resource,),
-                    dict(get=partial(admin_check, func=attr))
-                )
-            else:
-                tmp_class = type(
-                    class_name,
-                    (Resource,),
-                    dict(get=attr)
-                )
             flask_api.add_resource(tmp_class, *rest_url_resources)
+
+
+######################################################################
+#
+#   4. Define Web UI resources
+#
+######################################################################
+def web_ui_adder(api):
+    api.add_resource(WebUI_index, '/index.html')
+    api.add_resource(WebUI_js, '/main.js')
+    api.add_resource(WebUI_css, '/main.css')
+    api.add_resource(WebUI_json, '/api_data.json')
+
+class WebUI_index(Resource):
+    def get(self):
+        with open('./www/index.html') as f:
+            response = make_response(f.read())
+        response.headers['Content-Type'] = 'text/html'
+        return response
+
+class WebUI_js(Resource):
+    def get(self):
+        with open('./www/main.js') as f:
+            response = make_response(f.read())
+        response.headers['Content-Type'] = 'application/javascript'
+        return response
+
+class WebUI_css(Resource):
+    def get(self):
+        with open('./www/main.css') as f:
+            response = make_response(f.read())
+        response.headers['Content-Type'] = 'text/css'
+        return response
+
+class WebUI_json(Resource):
+    def get(self):
+        with open('./www/api_data.json') as f:
+            response = make_response(f.read())
+        response.headers['Content-Type'] = 'application/json'
+        return response

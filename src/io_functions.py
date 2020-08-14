@@ -108,9 +108,9 @@ class InputHandler:
             player_backend.modify_media_list(path, getattr(self.audio_players, 'ml_' + music_or_ambience), append=True)
             return {'msg':'ok! ' + music_or_ambience + ' appended with: ' + directory}
 
-    def wp_funcs(self, url, music_or_ambience):
+    def wp_funcs(self, url, music_or_ambience, wp_type):
         '''Runs a series of checks, then appends + plays the web media to the playlist'''
-        if not re.search('^https?:\/\/', url):
+        if not re.search('^https?://', url):
             return {'err':'url is missing protocol (http or https)'}
 
         if re.search('http(?:s?)://?(?:www\.)?youtu\.?be(?:\.com)?', url):
@@ -127,7 +127,10 @@ class InputHandler:
         mp = getattr(self.audio_players, 'mp_' + music_or_ambience)
         ml = getattr(self.audio_players, 'ml_' + music_or_ambience)
 
-        player_backend.modify_media_list(url, ml, append=True, media_player=mp)
+        if wp_type == 'wp':
+            player_backend.modify_media_list(url, ml, media_player=mp)
+        elif wp_type == 'wc':
+            player_backend.modify_media_list(url, ml, media_player=mp, append=True)
         
         track = player_backend.media_list_player_get_song(mp)
         return {'msg':'ok! ' + music_or_ambience + ' playing ' + track}
@@ -216,7 +219,17 @@ class InputHandler:
     @patience_flag
     def music_wp(self, url):
         '''Play the web resource in the music player'''
-        return self.wp_funcs(url, 'music')
+        return self.wp_funcs(url, 'music', 'wp')
+
+    @admin
+    @api
+    @busy
+    @busy_flag
+    @patience
+    @patience_flag
+    def music_wc(self, url):
+        '''Enqueue the web resource in the music player'''
+        return self.wp_funcs(url, 'music', 'wc')
 
     @admin
     @api
@@ -310,7 +323,17 @@ class InputHandler:
     @patience_flag
     def ambience_wp(self, url):
         '''Play the web resource in the ambience player'''
-        return self.wp_funcs(url, 'ambience')
+        return self.wp_funcs(url, 'ambience', 'wp')
+
+    @admin
+    @api
+    @busy
+    @busy_flag
+    @patience
+    @patience_flag
+    def ambience_wc(self, url):
+        '''Enqueue the web resource in the ambience player'''
+        return self.wp_funcs(url, 'ambience', 'wc')
 
     @admin
     @api

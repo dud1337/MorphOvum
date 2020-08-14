@@ -94,3 +94,10 @@ default_files:
 clip_timing:
   clip_mean           : 90
   clip_std_deviation  : 15
+
+# 7. UI Settings.
+# Enable Web UI
+#
+# Defaults:
+#   web_ui: true
+web_ui: true

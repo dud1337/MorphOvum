@@ -7,13 +7,14 @@
 #       3. Creates AudioPlayers and InputHandler instances
 #       4. Converts InputHandler API functions to Resources and binds them to Flask App
 #       5. Binds Admin Resource to Flask App
-#       6. Runs the API
+#       6. Optionally binds Web UI Resources to Flask App
+#       7. Runs the API
 #
 ######################################################################
 import player_backend
 import io_functions
 import flask_resources
-from flask import Flask
+from flask import Flask, make_response
 from flask_restful import Api
 from string import ascii_uppercase, digits
 from random import choice
@@ -87,7 +88,16 @@ api.add_resource(
 
 ######################################################################
 #
-#       6. Runs the API
+#       6. Optionally binds Web UI Resources to Flask App
+#
+######################################################################
+if config_data['web_ui']:
+    flask_resources.web_ui_adder(api)
+
+
+######################################################################
+#
+#       7. Runs the API
 #
 ######################################################################
 print(ascii_splash)
