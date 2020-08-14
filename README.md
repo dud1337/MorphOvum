@@ -51,20 +51,20 @@ Morph Ovum is your free and open source community radio service.
 version: '3'
 services:
 	morphovum:
-    	image: dud1337/morphovum
-	    stdin_open: true
-	    tty: true
-	    ports:
+		image: dud1337/morphovum
+		stdin_open: true
+		tty: true
+		ports:
 			- '8138:8138'
 			- '8139:8139'
-#    	volumes:
-#      		- /path/to/your/music:/fm/music
-#      		- /path/to/your/ambience:/fm/ambience
-#      		- /path/to/your/clips:/fm/clips
-#      		- /path/to/your/playlists:/fm/playlists
-    	environment:
-      		- MORPH_OVUM_PASSWORD=changeme
-      		- TZ="Europe/Zurich"
+#		volumes:
+#			- /path/to/your/music:/fm/music
+#			- /path/to/your/ambience:/fm/ambience
+#			- /path/to/your/clips:/fm/clips
+#			- /path/to/your/playlists:/fm/playlists
+		environment:
+			- MORPH_OVUM_PASSWORD=changeme
+			- TZ="Europe/Zurich"
 ```
 1. To start your Morph Ovum server run
 ```
