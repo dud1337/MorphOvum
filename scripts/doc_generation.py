@@ -38,6 +38,7 @@ for attr_name in dir(io_functions.InputHandler):
             method_data_for_json['argument'] = method_arg
         else:
             method_arg = None
+            readme_tmp += '|'
             method_data_for_json['argument'] = None
             
         api_list.append(method_data_for_json)
