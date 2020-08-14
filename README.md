@@ -30,7 +30,7 @@ v0.9      █████████  20200802
 ## About
 Morph Ovum is your free and open source community radio service.
 
-* No sound card and no GUI required
+* No sound card and no desktop environment required
 * 3 audio sources (*all optional*):
   * Music (*e.g. smooth jazz*)
   * Ambience (*e.g. distant thunderstorms*)
@@ -176,7 +176,7 @@ The API listens by default on http://127.0.0.1:8139 if ran via the above docker 
 | `/ambience/current/playlist` | | Return the currently playing ambience playlist |
 | `/ambience/current/track` | | Return the currently playing ambience track |
 | `/ambience/history` | | Returns up to 100 of the last played tracks for a player |
-| `/ambience/skip` | `admin` | Skip the current ambience track |
+| `/ambience/skip` | `admin` `busy` `patience` | Skip the current ambience track |
 | `/ambience/toggle` | `admin` `patience` | Toggle the playing of the ambience player |
 | `/clips/now` | `admin` `patience` | Schedule a clip to be played now |
 | `/clips/toggle` | `admin` | Toggle the playing of clips |
@@ -228,16 +228,19 @@ requests
 | `Dockerfile` | Prepares morph ovum container |
 | `docker-compose.yaml` | Morph Ovum container instance configuration |
 | `requirements.txt` | Required python modules to pip install |
-| `src/core/config.yaml` | Player instance configuration file |
-| `src/core/main.py` | File to run to start Morph Ovum |
-| `src/core/io_functions.py` | Handles user input |
-| `src/core/player_backend.py` | Defines audio players classes, threads, and their functions |
-| `src/core/flask_resources.py` | Generate Flask Resources from io functions |
-| `src/www/index.html` | Web3 frontend main file |
-| `src/www/main.js` | Web3 frontent JavaScript |
+| `src/config.yaml` | Player instance configuration file |
+| `src/main.py` | File to run to start Morph Ovum |
+| `src/io_functions.py` | Handles user input |
+| `src/player_backend.py` | Defines audio players classes, threads, and their functions |
+| `src/flask_resources.py` | Generate Flask Resources from io functions |
+| `src/www/index.html` | Web UI main file |
+| `src/www/main.js` | Web UI JavaScript |
+| `src/www/main.css` | Web UI CSS |
+| `src/www/api_data.json` | API metadata |
 | `res/morph_ovum.ascii` | Morph Ovum ASCII art |
 | `res/MorphOvum.gif` | Freeware Morph Ovum gif |
 | `res/morph_ovum.vhosts` | Sample apache2 config |
+| `scripts/doc_generation.py` | Print README.md documentation and create `api_data.json` |
 
 ### Miscellaneous
 * The name was <del>pilfered from</del> inspired by [Heretic 2](https://heretic.fandom.com/wiki/Morph_Ovum_(Spell)).

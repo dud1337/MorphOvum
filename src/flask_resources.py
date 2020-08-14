@@ -145,10 +145,11 @@ def bind_flask_resources(flask_api, class_instance):
 #
 ######################################################################
 def web_ui_adder(api):
-    api.add_resource(WebUI_index, '/index.html')
+    api.add_resource(WebUI_index, '/')
     api.add_resource(WebUI_js, '/main.js')
     api.add_resource(WebUI_css, '/main.css')
     api.add_resource(WebUI_json, '/api_data.json')
+    api.add_resource(WebUI_favicon, '/favicon.ico')
 
 class WebUI_index(Resource):
     def get(self):
@@ -176,4 +177,11 @@ class WebUI_json(Resource):
         with open('./www/api_data.json') as f:
             response = make_response(f.read())
         response.headers['Content-Type'] = 'application/json'
+        return response
+
+class WebUI_favicon(Resource):
+    def get(self):
+        with open('./www/favicon.ico') as f:
+            response = make_response(f.read())
+        response.headers['Content-Type'] = 'image/x-icon'
         return response

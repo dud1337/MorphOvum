@@ -394,6 +394,10 @@ class InputHandler:
 
     @admin
     @api
+    @busy
+    @busy_flag
+    @patience
+    @patience_flag
     def ambience_skip(self):
         '''Skip the current ambience track'''
         return self.skip_funcs('ambience')
