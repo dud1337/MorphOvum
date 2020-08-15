@@ -181,7 +181,7 @@ class WebUI_json(Resource):
 
 class WebUI_favicon(Resource):
     def get(self):
-        with open('./www/favicon.ico') as f:
+        with open('./www/favicon.ico', 'rb') as f:
             response = make_response(f.read())
         response.headers['Content-Type'] = 'image/x-icon'
         return response

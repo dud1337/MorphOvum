@@ -8,6 +8,16 @@ fetch('./api_data.json')
 		create_admin_api_module();
 })
 
+function sha256_digest(message) {
+    const msgUint8 = new TextEncoder().encode(message);
+    return crypto.subtle.digest('SHA-256', msgUint8)
+      .then(hashBuffer => {
+        const hashArray = Array.from(new Uint8Array(hashBuffer)); 
+        const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+        return hashHex;
+      })
+}
+
 function request_function_generator(api_metadata) {
     // sets a GET or POST function for each api function
 	var resource = api_metadata.resource;
@@ -60,6 +70,7 @@ function create_api_frontend_button(api_metadata, container) {
     
     var resp_box = document.createElement("div");
     resp_box.id = api_metadata.name + "_resp";
+	resp_box.innerHTML = ' ';
     resp_box.classList.add("resp_box_class");
     
     var req_button = document.createElement("input");
@@ -98,6 +109,7 @@ function create_admin_api_module() {
     
 	var resp_box = document.createElement("div");
     resp_box.id = api_metadata.name + "_resp";
+	resp_box.innerHTML = ' ';
     resp_box.classList.add("resp_box_class");
     
     var req_button = document.createElement("input");
@@ -105,6 +117,7 @@ function create_admin_api_module() {
     req_button.type = "button";
     req_button.value = "Request";
     req_button.classList.add("api_entry_req_button");
+
 
 	function request_function() {
 		var xhttp = new XMLHttpRequest();
@@ -115,7 +128,9 @@ function create_admin_api_module() {
 		}
 		xhttp.open("POST", api_metadata.resource, true);
 		xhttp.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
-		xhttp.send(api_metadata.argument + '=' + document.getElementById(api_metadata.name + '_arg').value);
+		sha256_digest(document.getElementById(api_metadata.name + '_arg').value).then(hashed_message => {
+			xhttp.send(api_metadata.argument + '=' + hashed_message);
+		})
 	}
 
     req_button.onclick = request_function;
