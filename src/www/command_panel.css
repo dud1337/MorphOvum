@@ -1,0 +1,23 @@
+table {
+	width: 100%;
+}
+
+.td_description {
+  width: calc(50% - 600px);
+}
+
+.td_arg {
+	width: 200px;
+}
+
+.td_req {
+	width: 100px;
+}
+
+.td_resp {
+	width: 300px;
+}
+
+h1, p {
+	text-align: center;
+}

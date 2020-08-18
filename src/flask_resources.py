@@ -146,8 +146,9 @@ def bind_flask_resources(flask_api, class_instance):
 ######################################################################
 def web_ui_adder(api):
     api.add_resource(WebUI_index, '/')
-    api.add_resource(WebUI_js, '/main.js')
-    api.add_resource(WebUI_css, '/main.css')
+    api.add_resource(WebUI_cp_index, '/command_panel.html')
+    api.add_resource(WebUI_cp_js, '/command_panel.js')
+    api.add_resource(WebUI_cp_css, '/command_panel.css')
     api.add_resource(WebUI_json, '/api_data.json')
     api.add_resource(WebUI_favicon, '/favicon.ico')
 
@@ -158,16 +159,23 @@ class WebUI_index(Resource):
         response.headers['Content-Type'] = 'text/html'
         return response
 
-class WebUI_js(Resource):
+class WebUI_cp_index(Resource):
     def get(self):
-        with open('./www/main.js') as f:
+        with open('./www/command_panel.html') as f:
+            response = make_response(f.read())
+        response.headers['Content-Type'] = 'text/html'
+        return response
+
+class WebUI_cp_js(Resource):
+    def get(self):
+        with open('./www/command_panel.js') as f:
             response = make_response(f.read())
         response.headers['Content-Type'] = 'application/javascript'
         return response
 
-class WebUI_css(Resource):
+class WebUI_cp_css(Resource):
     def get(self):
-        with open('./www/main.css') as f:
+        with open('./www/command_panel.css') as f:
             response = make_response(f.read())
         response.headers['Content-Type'] = 'text/css'
         return response
