@@ -385,7 +385,7 @@ class AudioPlayers:
         self.config_data = config_data
 
         # 1. VLC instance and its players
-        self.i = vlc.Instance('--quiet --no-video')
+        self.i = vlc.Instance('--quiet --no-video --sout-http-mime=audio/mpeg')
         self.mp_vaudio = self.i.media_player_new()
         self.mp_music = self.i.media_list_player_new()
         self.mp_ambience = self.i.media_list_player_new()
@@ -430,7 +430,7 @@ class AudioPlayers:
         full_cmd = [
             transcode_cmd,
             'sout-keep',
-            'file-caching=1000',
+            'file-caching=1000'
         ]
 
         m_vaudio = self.i.media_new('pulse://virtual.monitor', *full_cmd)
