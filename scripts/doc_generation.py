@@ -15,7 +15,7 @@ api_flags = ['admin', 'busy', 'patience']
 api_list = []
 readme_table_post = '**POST requests**\n\n'
 readme_table_post += '| Resource | Argument | Flags | Function |\n| ------ | ------ | ------ | ------ |\n'
-readme_table_post += '| `/admin` | `password_hash` | | Sent a SHA256 hash of the admin password to obtain an admin session |\n'
+readme_table_post += '| `admin` | `password_hash` | | Sent a SHA256 hash of the admin password to obtain an admin session |\n'
 
 readme_table_get = '**GET requests**\n\n'
 readme_table_get += '| Resource | Flags | Function |\n| ------ | ------ | ------ |\n'
@@ -30,7 +30,7 @@ for attr_name in dir(io_functions.InputHandler):
         }
         is_post = len(getfullargspec(attr)[0]) > 1
 
-        readme_tmp = '| `/' + attr_name.replace('_', '/') + '` '
+        readme_tmp = '| attr_name.replace('_', '/') + '` '
 
         if len(getfullargspec(attr)[0]) > 1:
             method_arg = getfullargspec(attr)[0][1]
