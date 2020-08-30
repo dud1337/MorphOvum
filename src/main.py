@@ -81,7 +81,7 @@ flask_resources.bind_flask_resources(api, ih)
 ######################################################################
 api.add_resource(
     flask_resources.Admin,
-    '/admin',
+    '/api/admin',
     resource_class_kwargs={'password': config_data['admin_password']}
 )
 

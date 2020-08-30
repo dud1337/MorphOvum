@@ -37,7 +37,7 @@ function request_function_generator(api_metadata) {
 					document.getElementById(api_metadata.name + '_resp').innerHTML = this.responseText;
 				}
 			}
-			xhttp.open("POST", resource, true);
+			xhttp.open("POST", "/api/" + resource, true);
 			xhttp.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
 			xhttp.send(api_metadata.argument + '=' + document.getElementById(api_metadata.name + '_arg').value);
 		}
@@ -49,7 +49,7 @@ function request_function_generator(api_metadata) {
 					document.getElementById(api_metadata.name + '_resp').innerHTML = this.responseText;
 				}
 			}
-			xhttp.open("GET", resource, true);
+			xhttp.open("GET", "/api/" + resource, true);
 			xhttp.send();
 		}
 	}
@@ -105,7 +105,7 @@ function create_api_table_row(api_metadata, container, admin) {
 					document.getElementById(api_metadata.name + '_resp').innerHTML = this.responseText;
 				}
 			}
-			xhttp.open("POST", api_metadata.resource, true);
+			xhttp.open("POST", "/api/" + api_metadata.resource, true);
 			xhttp.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
 			sha256_digest(document.getElementById(api_metadata.name + '_arg').value).then(hashed_message => {
 				xhttp.send(api_metadata.argument + '=' + hashed_message);

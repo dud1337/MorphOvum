@@ -80,7 +80,7 @@ def rest_resource_generate(func_name, func, class_instance):
         class_name += segment[0].upper() + segment[1::]
 
     rest_url_resources = []
-    rest_res = '/' + func_name.replace('_','/')
+    rest_res = '/api/' + func_name.replace('_','/')
     rest_url_resources.append(rest_res)
 
     arg_list = getfullargspec(getattr(class_instance.__class__, func_name))[0]
@@ -146,10 +146,10 @@ def bind_flask_resources(flask_api, class_instance):
 ######################################################################
 def web_ui_adder(api):
     api.add_resource(WebUI_index, '/')
-    api.add_resource(WebUI_cp_index, '/command_panel.html')
-    api.add_resource(WebUI_cp_js, '/command_panel.js')
-    api.add_resource(WebUI_cp_css, '/command_panel.css')
-    api.add_resource(WebUI_json, '/api_data.json')
+    api.add_resource(WebUI_cp_index, '/control_panel/')
+    api.add_resource(WebUI_cp_js, '/control_panel/control_panel.js')
+    api.add_resource(WebUI_cp_css, '/control_panel/control_panel.css')
+    api.add_resource(WebUI_json, '/control_panel/api_data.json')
     api.add_resource(WebUI_favicon, '/favicon.ico')
 
 class WebUI_index(Resource):
@@ -161,21 +161,21 @@ class WebUI_index(Resource):
 
 class WebUI_cp_index(Resource):
     def get(self):
-        with open('./www/command_panel.html') as f:
+        with open('./www/control_panel.html') as f:
             response = make_response(f.read())
         response.headers['Content-Type'] = 'text/html'
         return response
 
 class WebUI_cp_js(Resource):
     def get(self):
-        with open('./www/command_panel.js') as f:
+        with open('./www/control_panel.js') as f:
             response = make_response(f.read())
         response.headers['Content-Type'] = 'application/javascript'
         return response
 
 class WebUI_cp_css(Resource):
     def get(self):
-        with open('./www/command_panel.css') as f:
+        with open('./www/control_panel.css') as f:
             response = make_response(f.read())
         response.headers['Content-Type'] = 'text/css'
         return response
