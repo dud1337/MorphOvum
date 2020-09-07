@@ -407,9 +407,10 @@ class AudioPlayers:
             '''callback function for event managers to store track history'''
             mp = getattr(self, 'mp_' + music_or_ambience)
             history = getattr(self, 'history_' + music_or_ambience)
-            if len(history) == 100:
+            if len(history) == 101:
                 history = history[1::]
             history.append(media_list_player_get_song(mp))
+            setattr(self, 'history_' + music_or_ambience, history)
 
         self.em_music.event_attach(vlc.EventType.MediaPlayerMediaChanged, update_history_list, self, 'music')
         self.em_ambience.event_attach(vlc.EventType.MediaPlayerMediaChanged, update_history_list, self, 'ambience')
