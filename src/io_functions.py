@@ -19,7 +19,7 @@ import player_backend
 import decorator
 import re
 import requests
-
+from inspect import getfullargspec
 
 ######################################################################
 #
@@ -92,6 +92,24 @@ class InputHandler:
         self.last_change = datetime.datetime.today()
         self.busy = False
         self.last_chance = datetime.datetime.today()
+        self.api_methods = None
+        self.generate_help()
+
+    def generate_help(self):
+        '''Provides API commands and arguments, if any'''
+        self.api_methods = {}
+        for attr_name in dir(self):
+            attr = getattr(self, attr_name)
+            if hasattr(attr, 'is_api_method'):
+                if len(getfullargspec(attr)[0]) > 1:
+                    arg = getfullargspec(attr)[0][1]
+                else:
+                    arg = False
+
+                self.api_methods[attr_name] = {
+                    'description'   :attr.__doc__,
+                    'arg'           :arg
+                }
 
     def ls_funcs(self, directory, music_or_ambience, ls_type):
         '''Deals with listing, playing and appending playlists to various functions'''
@@ -222,6 +240,11 @@ class InputHandler:
         return {'msg':'ok! ' + str(len(history)) + ' tracks in history', 'data':history}
 
     #   API Definitions
+    @api
+    def help(self):
+        '''Return the available commands and their arguments, if any'''
+        return {'msg':'ok!', 'data':self.api_methods}
+
     @admin
     @api
     def music_ls(self, directory='.'):
