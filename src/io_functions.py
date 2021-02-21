@@ -320,12 +320,12 @@ class InputHandler:
         return self.player_toggle('music')
 
     @api
-    def music_current_track(self):
+    def music_currenttrack(self):
         '''Return the currently playing music track'''
         return self.current_funcs('music', 'track')
 
     @api
-    def music_current_playlist(self):
+    def music_currentplaylist(self):
         '''Return the currently playing music playlist'''
         return self.current_funcs('music', 'playlist')
 
@@ -434,12 +434,12 @@ class InputHandler:
         return self.player_toggle('ambience')
 
     @api
-    def ambience_current_track(self):
+    def ambience_currenttrack(self):
         '''Return the currently playing ambience track'''
         return self.current_funcs('ambience', 'track')
 
     @api
-    def ambience_current_playlist(self):
+    def ambience_currentplaylist(self):
         '''Return the currently playing ambience playlist'''
         return self.current_funcs('ambience', 'playlist')
 

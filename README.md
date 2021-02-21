@@ -173,15 +173,16 @@ The API listens by default on http://127.0.0.1:8139/api if ran via the above doc
 
 | Resource | Flags | Function |
 | ------ | ------ | ------ |
-| `ambience/current/playlist` | | Return the currently playing ambience playlist |
-| `ambience/current/track` | | Return the currently playing ambience track |
+| `ambience/currentplaylist` | | Return the currently playing ambience playlist |
+| `ambience/currenttrack` | | Return the currently playing ambience track |
 | `ambience/history` | | Returns up to 100 of the last played tracks for a player |
 | `ambience/skip` | `admin` `busy` `patience` | Skip the current ambience track |
 | `ambience/toggle` | `admin` `patience` | Toggle the playing of the ambience player |
 | `clips/now` | `admin` `patience` | Schedule a clip to be played now |
 | `clips/toggle` | `admin` | Toggle the playing of clips |
-| `music/current/playlist` | | Return the currently playing music playlist |
-| `music/current/track` | | Return the currently playing music track |
+| `help` | | Return the available commands and their arguments, if any |
+| `music/currentplaylist` | | Return the currently playing music playlist |
+| `music/currenttrack` | | Return the currently playing music track |
 | `music/history` | | Returns the last music tracks played (max 100) |
 | `music/skip` | `admin` `busy` `patience` | Skip the currently playing music track |
 | `music/toggle` | `admin` `patience` | Toggle the playing of the music player |

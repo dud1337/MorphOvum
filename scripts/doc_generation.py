@@ -30,7 +30,7 @@ for attr_name in dir(io_functions.InputHandler):
         }
         is_post = len(getfullargspec(attr)[0]) > 1
 
-        readme_tmp = '| attr_name.replace('_', '/') + '` '
+        readme_tmp = '| `' + attr_name.replace('_', '/') + '` '
 
         if len(getfullargspec(attr)[0]) > 1:
             method_arg = getfullargspec(attr)[0][1]
