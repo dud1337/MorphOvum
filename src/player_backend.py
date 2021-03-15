@@ -42,7 +42,7 @@ def eprint(*args, **kwargs):
 #   1. Defines config.yaml loader & validation functions
 #
 ######################################################################
-def load_config():
+def load_config(config_file='default-config.yaml'):
     '''loads config.yaml file
     checks and reports potential errors'''
     def check_missing(key, validator_conf, test_conf): 
@@ -189,7 +189,7 @@ def load_config():
         }
     }
 
-    with open('config.yaml') as conf:
+    with open(config_file) as conf:
         try:
             instance_conf = yaml.safe_load(conf)
         except yaml.YAMLError as exc:

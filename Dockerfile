@@ -34,7 +34,7 @@ RUN pip install -r /fm/requirements.txt
 ADD src /fm/src
 
 # Prepare subdirectories
-RUN mkdir /fm/ambience /fm/clips /fm/music /fm/playlists
+RUN mkdir /fm/ambience /fm/clips /fm/music /fm/playlists /fm/conf
 RUN chown pulseaudio:pulseaudio -R /fm \
 	&& chmod 775 -R /fm
 
@@ -47,6 +47,5 @@ WORKDIR "/fm/src"
 ENTRYPOINT pulseaudio -D \
 	&& pacmd load-module module-null-sink sink_name=virtual sink_properties=device.description=virtual \
 	&& pacmd set-default-sink virtual \
-	&& sed -i -r "s/changeme/$MORPH_OVUM_PASSWORD/g" /fm/src/config.yaml \
-	&& python3 main.py
-
+	&& sed -i -r "s/changeme/$MORPH_OVUM_PASSWORD/g" /fm/src/default-config.yaml \
+	&& python3 main.py -c /fm/conf/config.yaml

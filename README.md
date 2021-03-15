@@ -11,7 +11,7 @@
   ███   (_)\/|_|| | |   ███  
     ███               ███    
        ███         ███       
-v0.9      █████████  20200802
+v0.10     █████████  20210315
 ```
 ## Table of Contents
 * [About](#about)
@@ -62,8 +62,9 @@ services:
 #           - /path/to/your/ambience:/fm/ambience
 #           - /path/to/your/clips:/fm/clips
 #           - /path/to/your/playlists:/fm/playlists
+#			- /path/to/your/config_dir:/fm/conf
         environment:
-        	- MORPH_OVUM_PASSWORD=changeme
+        	- MORPH_OVUM_PASSWORD=changeme	# not used if config_dir is given
         	- TZ="Europe/Zurich"
 ```
 1. To start your Morph Ovum server run
@@ -155,15 +156,15 @@ The API listens by default on http://127.0.0.1:8139/api if ran via the above doc
 | ------ | ------ | ------ | ------ |
 | `admin` | `password_hash` | | Sent a SHA256 hash of the admin password to obtain an admin session |
 | `ambience/ls` | `directory` | `admin` | List the contents of a subdirectory in the ambience directory |
-| `ambience/lsa` | `directory` | `admin` `busy` `patience` | Add and shuffle a file or the contents of a subdirectory in the ambience directory |
-| `ambience/lsc` | `directory` | `admin` `busy` `patience` | Enqueue a file or the contents of a subdirectory in the music directory |
-| `ambience/lsp` | `directory` | `admin` `busy` `patience` | Play a file or the contents of a subdirectory in the ambience directory |
+| `ambience/lsa` | `directory_or_file` | `admin` `busy` `patience` | Add and shuffle a file or the contents of a subdirectory in the ambience directory |
+| `ambience/lsc` | `directory_or_file` | `admin` `busy` `patience` | Enqueue a file or the contents of a subdirectory in the music directory |
+| `ambience/lsp` | `directory_or_file` | `admin` `busy` `patience` | Play a file or the contents of a subdirectory in the ambience directory |
 | `ambience/wc` | `url` | `admin` `busy` `patience` | Enqueue the web resource in the ambience player |
 | `ambience/wp` | `url` | `admin` `busy` `patience` | Play the web resource in the ambience player |
 | `music/ls` | `directory` | `admin` | List the contents of a subdirectory in the music directory |
-| `music/lsa` | `directory` | `admin` `busy` `patience` | Add and shuffle a file or the contents of a subdirectory in the music directory |
-| `music/lsc` | `directory` | `admin` `busy` `patience` | Enqueue a file or the contents of a subdirectory in the music directory |
-| `music/lsp` | `directory` | `admin` `busy` `patience` | Play a file or the contents of a subdirectory in the music directory |
+| `music/lsa` | `directory_or_file` | `admin` `busy` `patience` | Add and shuffle a file or the contents of a subdirectory in the music directory |
+| `music/lsc` | `directory_or_file` | `admin` `busy` `patience` | Enqueue a file or the contents of a subdirectory in the music directory |
+| `music/lsp` | `directory_or_file` | `admin` `busy` `patience` | Play a file or the contents of a subdirectory in the music directory |
 | `music/playlist` | `playlist` | `admin` `patience` | Plays a playlist from available playlists. An int n input will play the nth playlist |
 | `music/playlists` | `playlist` | | Lists available playlists |
 | `music/wc` | `url` | `admin` `busy` `patience` | Enqueue the web resource in the music player |
@@ -229,7 +230,7 @@ requests
 | `Dockerfile` | Prepares morph ovum container |
 | `docker-compose.yaml` | Morph Ovum container instance configuration |
 | `requirements.txt` | Required python modules to pip install |
-| `src/config.yaml` | Player instance configuration file |
+| `src/default-config.yaml` | Default player instance configuration file |
 | `src/main.py` | File to run to start Morph Ovum |
 | `src/io_functions.py` | Handles user input |
 | `src/player_backend.py` | Defines audio players classes, threads, and their functions |

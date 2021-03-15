@@ -13,6 +13,8 @@ services:
       - ./samples/ambience:/fm/ambience
       - ./samples/clips:/fm/clips
       - ./samples/playlists:/fm/playlists
+      # - /path/to/your/config_dir:/fm/conf
+      # config dir should contain config.yaml
     environment:
-      - MORPH_OVUM_PASSWORD=changeme
+      - MORPH_OVUM_PASSWORD=changeme # not used if config.yaml provided
       - TZ="Europe/Zurich"

@@ -33,7 +33,7 @@ def busy(func, *args, **kwargs):
     to a "busy" state until the command is completed.'''
     io_instance = args[0]
     if io_instance.busy:
-        return {'err':'Busy. Please try again'}
+        return {'msg':'Busy. Please try again', 'err':True, 'data':None}
     else:
         io_instance.busy = True
         out = func(*args, **kwargs)
@@ -56,7 +56,7 @@ def patience(func, *args, **kwargs):
     diff = (now - io_instance.last_change).seconds
 
     if diff < timeout:
-        return {'err':'Please wait ' + str(timeout - diff) + ' seconds'}
+        return {'msg':'Please wait ' + str(timeout - diff) + ' seconds', 'err':True, 'data':None}
     else:
         io_instance.last_change = now 
         return func(*args, **kwargs)
@@ -111,25 +111,31 @@ class InputHandler:
                     'arg'           :arg
                 }
 
+    def make_output_data(self, msg, err=False, data=None):
+        return {'err':err, 'msg':msg, 'data':data}
+
     def ls_funcs(self, directory, music_or_ambience, ls_type):
-        '''Deals with listing, playing and appending playlists to various functions'''
-        path = os.path.join(self.audio_players.config_data['audio_dirs'][music_or_ambience], directory)
+        '''Deals with listing, playing, cuing and appending files or directories to various players'''
+        base_dir = self.audio_players.config_data['audio_dirs'][music_or_ambience]
+        path = os.path.join(base_dir, directory)
+
+        if os.path.commonprefix((os.path.realpath(path), base_dir)) != base_dir:
+            return self.make_output_data('directory traversal detected', err=True)
+
+        if not os.path.exists(path):
+            return self.make_output_data('no file or directory named "' + directory + '"', err=True)
 
         mp = getattr(self.audio_players, 'mp_' + music_or_ambience)
         ml = getattr(self.audio_players, 'ml_' + music_or_ambience)
-
-        if not os.path.isdir(path):
-            return {'err':'"' + directory + '" is not a directory'}
-        if ls_type == 'ls':
-            return {'msg':'ok! got conents of ' + directory + ' directory', 'data':sorted(os.listdir(path))}
-        elif ls_type == 'lsp': 
+        
+        if ls_type == 'lsp':
             player_backend.modify_media_list(
                 path,
                 ml,
                 mp,
                 switch_current=True
             )
-            return {'msg':'ok! ' + music_or_ambience + ' set to: ' + directory}
+            return self.make_output_data('' + music_or_ambience + ' set to: ' + directory)
         elif ls_type == 'lsc':
             player_backend.modify_media_list(
                 path,
@@ -138,7 +144,7 @@ class InputHandler:
                 append=True,
                 shuffle=False
             )
-            return {'msg':'ok! ' + music_or_ambience + ' appended with: ' + directory}
+            return self.make_output_data(music_or_ambience + ' appended with: ' + directory)
         elif ls_type == 'lsa':
             player_backend.modify_media_list(
                 path,
@@ -146,23 +152,30 @@ class InputHandler:
                 mp,
                 append=True,
             )
-            return {'msg':'ok! ' + music_or_ambience + ' added and shuffled with: ' + directory}
+            return self.make_output_data(music_or_ambience + ' added and shuffled with: ' + directory)
+        elif ls_type == 'ls':
+            if not os.path.isdir(path):
+                return self.make_output_data('"' + directory + '" is not a directory', err=True)
+
+            dir_contents = sorted(os.listdir(path))
+            return self.make_output_data(' '.join(dir_contents), data=dir_contents)
+
 
     def wp_funcs(self, url, music_or_ambience, wp_type):
         '''Runs a series of checks, then appends + plays the web media to the playlist'''
         if not re.search('^https?://', url):
-            return {'err':'url is missing protocol (http or https)'}
+            return self.make_output_data('url is missing protocol (http or https)', err=True)
 
         if re.search('http(?:s?)://?(?:www\.)?youtu\.?be(?:\.com)?', url):
-            if not re.search('http(?:s?)://(?:www\.)?youtu(?:be\.com\/watch\?v=|\.be\/)([\w\-\_]{11})(&(amp;)?[\w\=]*|$)', url):
-                return {'err':'YouTube url ' + url + ' abnormal'}
+            if not re.search('http(?:s?)://(?:www\.)?youtu(?:be\.com\/watch\?v=|\.be\/)([\w\-\_]{11})(\?(amp;)?[\w\=]*|$)', url):
+                return self.make_output_data('YouTube url "' + url + '" abnormal', err=True)
         
         try:
             r = requests.get(url)
             if r.status_code != 200:
-                return {'err':'url ' + url + ' returned status code ' + str(r.status_code)}
+                return self.make_output_data('url ' + url + ' returned status code ' + str(r.status_code), err=True)
         except requests.exceptions.RequestException as e:
-            return {'err':'GET request to url ' + url + ' failed with error message: ' + e}
+            return self.make_output_data('GET request to url ' + url + ' failed with error message: ' + e, err=True)
 
         mp = getattr(self.audio_players, 'mp_' + music_or_ambience)
         ml = getattr(self.audio_players, 'ml_' + music_or_ambience)
@@ -175,7 +188,7 @@ class InputHandler:
                 switch_current=True
             )
             track = player_backend.media_list_player_get_song(mp)
-            return {'msg':'ok! ' + music_or_ambience + ' playing: ' + track}
+            return self.make_output_data(music_or_ambience + ' playing: ' + track)
 
         elif wp_type == 'wc':
             player_backend.modify_media_list(
@@ -186,7 +199,7 @@ class InputHandler:
                 shuffle=False
             )
             track = player_backend.media_list_player_get_song(mp)
-            return {'msg':'ok! ' + music_or_ambience + ' enqeued with: ' + track}
+            return self.make_output_data(music_or_ambience + ' enqeued with: ' + track)
 
     def current_funcs(self, music_or_ambience, track_or_playlist):
         '''Returns current song or list of media currently in a player's MediaList'''
@@ -194,14 +207,14 @@ class InputHandler:
             mp = getattr(self.audio_players, 'mp_' + music_or_ambience)
             track = player_backend.media_list_player_get_song(mp)
 
-            return {'msg':'ok!', 'data':track}
+            return self.make_output_data(track, data=track)
         elif track_or_playlist == 'playlist':
             ml = getattr(self.audio_players, 'ml_' + music_or_ambience)
             output_data = []
             for media in ml:
                 output_data.append(player_backend.media_get_song(media))
     
-            return {'msg':'ok!', 'data':output_data}
+            return self.make_output_data(' '.join(output_data), data=output_data)
 
     def skip_funcs(self, music_or_ambience):
         '''Skips (runs next()) on the current track of a player'''
@@ -209,18 +222,11 @@ class InputHandler:
         ml = getattr(self.audio_players, 'ml_' + music_or_ambience)
         old_track = player_backend.media_list_player_get_song(mp)
         if ml.count() == 1:
-            return {'err':'only one file in playlist: ' + old_track}
+            return self.make_output_data('only one file in playlist: ' + old_track, err=True)
         mp.next()
         new_track = player_backend.media_list_player_get_song(mp)
 
-        output = {
-            'msg':'ok! ' + music_or_ambience + ' player skipped track: ' + old_track + ' \n now playing: ' + new_track,
-            'data':{
-                'old_track':old_track,
-                'new_track':new_track
-            }
-        }
-        return output
+        return self.make_output_data(music_or_ambience + ' player skipped track: ' + old_track + ' \n now playing: ' + new_track, data={'old_track':old_track, 'new_track':new_track})
 
     def player_toggle(self, music_or_ambience):
         '''Toggles a player's playing status'''
@@ -232,18 +238,18 @@ class InputHandler:
         else:
             mp.play()
             status = 'playing'
-        return {'msg':'ok! ' + music_or_ambience + ' is ' + status}
+        return self.make_output_data(music_or_ambience + ' is ' + status)
 
     def history_funcs(self, music_or_ambience):
         '''Returns up to 100 of the last played tracks for a player'''
         history = getattr(self.audio_players, 'history_' + music_or_ambience)
-        return {'msg':'ok! ' + str(len(history)) + ' tracks in history', 'data':history}
+        return self.make_output_data(str(len(history)) + ' tracks in history', data=history)
 
     #   API Definitions
     @api
     def help(self):
         '''Return the available commands and their arguments, if any'''
-        return {'msg':'ok!', 'data':self.api_methods}
+        return self.make_output_data(str(self.api_methods), data=self.api_methods)
 
     @admin
     @api
@@ -257,9 +263,9 @@ class InputHandler:
     @busy_flag
     @patience
     @patience_flag
-    def music_lsp(self, directory='.'):
+    def music_lsp(self, directory_or_file='.'):
         '''Play a file or the contents of a subdirectory in the music directory'''
-        return self.ls_funcs(directory, 'music', 'lsp')
+        return self.ls_funcs(directory_or_file, 'music', 'lsp')
 
     @admin
     @api
@@ -267,9 +273,9 @@ class InputHandler:
     @busy_flag
     @patience
     @patience_flag
-    def music_lsc(self, directory='.'):
+    def music_lsc(self, directory_or_file='.'):
         '''Enqueue a file or the contents of a subdirectory in the music directory'''
-        return self.ls_funcs(directory, 'music', 'lsc')
+        return self.ls_funcs(directory_or_file, 'music', 'lsc')
 
     @admin
     @api
@@ -277,9 +283,9 @@ class InputHandler:
     @busy_flag
     @patience
     @patience_flag
-    def music_lsa(self, directory='.'):
+    def music_lsa(self, directory_or_file='.'):
         '''Add and shuffle a file or the contents of a subdirectory in the music directory'''
-        return self.ls_funcs(directory, 'music', 'lsa')
+        return self.ls_funcs(directory_or_file, 'music', 'lsa')
 
     @admin
     @api
@@ -338,7 +344,7 @@ class InputHandler:
     def music_playlists(self, playlist=''):
         '''Lists available playlists'''
         playlists = sorted(os.listdir(self.audio_players.config_data['playlist_dir']))
-        return {'msg':'ok! returned ' + str(len(playlists)) + ' playlists', 'data':playlists}
+        return self.make_output_data('returned ' + str(len(playlists)) + ' playlists', data=playlists)
 
     @admin
     @api
@@ -354,10 +360,10 @@ class InputHandler:
             path = os.path.join(self.audio_players.config_data['playlist_dir'], playlist)
 
             if not os.path.isfile(path):
-                return {'err':'"' + directory + '" is not a file'}
+                return self.make_output_data('"' + directory + '" is not a file', err=True)
             else:
                 player_backend.modify_media_list(path, self.audio_players.ml_music, self.audio_players.mp_music)
-                return {'msg':'ok! music set to: ' + playlist}
+                return self.make_output_data('ok! music set to: ' + playlist)
 
     @admin
     @api
@@ -371,9 +377,9 @@ class InputHandler:
     @busy_flag
     @patience
     @patience_flag
-    def ambience_lsp(self, directory='.'):
+    def ambience_lsp(self, directory_or_file='.'):
         '''Play a file or the contents of a subdirectory in the ambience directory'''
-        return self.ls_funcs(directory, 'ambience', 'lsp')
+        return self.ls_funcs(directory_or_file, 'ambience', 'lsp')
 
     @admin
     @api
@@ -381,9 +387,9 @@ class InputHandler:
     @busy_flag
     @patience
     @patience_flag
-    def ambience_lsc(self, directory='.'):
+    def ambience_lsc(self, directory_or_file='.'):
         '''Enqueue a file or the contents of a subdirectory in the music directory'''
-        return self.ls_funcs(directory, 'ambience', 'lsc')
+        return self.ls_funcs(directory_or_file, 'ambience', 'lsc')
 
     @admin
     @api
@@ -391,9 +397,9 @@ class InputHandler:
     @busy_flag
     @patience
     @patience_flag
-    def ambience_lsa(self, directory='.'):
+    def ambience_lsa(self, directory_or_file='.'):
         '''Add and shuffle a file or the contents of a subdirectory in the ambience directory'''
-        return self.ls_funcs(directory, 'ambience', 'lsa')
+        return self.ls_funcs(directory_or_file, 'ambience', 'lsa')
 
     @admin
     @api
@@ -454,7 +460,7 @@ class InputHandler:
         '''Toggle the playing of clips'''
         self.audio_players.toggle_clips()
         on_off = 'on' if self.audio_players.clips_thread.clips_on else 'off'
-        return {'msg':'ok! clips turned ' + on_off}
+        return self.make_output_data('ok! clips turned ' + on_off)
 
     @admin
     @api
@@ -463,8 +469,9 @@ class InputHandler:
     def clips_now(self):
         '''Schedule a clip to be played now'''
         if not self.audio_players.clips_thread.clips_on:
-            return {'err':'clips not enabled. try /clips/toggle first'}
+            return self.make_output_data('clips not enabled. try /clips/toggle first', err=True)
 
         now = datetime.datetime.today()
         self.audio_players.clips_thread.clip_schedule = now
-        return {'msg':'ok! clip scheduled for ' + str(now)}
+        return self.make_output_data('clip scheduled for ' + str(now[:-7:]))
+

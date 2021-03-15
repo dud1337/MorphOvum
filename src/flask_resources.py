@@ -30,7 +30,7 @@ def admin_check(func=None, *args, **kwargs):
     if 'admin' in session:
         return func(*args, **kwargs)
     else:
-        return {'err':'requires admin privileges'}
+        return {'msg':'requires admin privileges', 'err':True, 'data':None}
 
 class Admin(Resource):
     '''Handles admin authentication via POST and `password_hash` parameter.

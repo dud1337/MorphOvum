@@ -14,10 +14,12 @@
 import player_backend
 import io_functions
 import flask_resources
+import os
 from flask import Flask, make_response
 from flask_restful import Api
 from string import ascii_uppercase, digits
 from random import choice
+from optparse import OptionParser
 
 ascii_splash = '''
             █████            
@@ -41,7 +43,15 @@ ascii_splash = '''
 #   1. Import config.yaml() data
 #
 ######################################################################
-config_data = player_backend.load_config()
+parser = OptionParser()
+parser.add_option('-c', '--config', dest='config_file',
+                          help='config yaml file to import', metavar='CONF')
+(options, args) = parser.parse_args()
+
+if options.config_file and os.path.isfile(options.config_file):
+    config_data = player_backend.load_config(config_file=options.config_file)
+else:
+    config_data = player_backend.load_config()
 
 
 ######################################################################
