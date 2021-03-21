@@ -167,7 +167,7 @@ class InputHandler:
             return self.make_output_data('url is missing protocol (http or https)', err=True)
 
         if re.search('http(?:s?)://?(?:www\.)?youtu\.?be(?:\.com)?', url):
-            if not re.search('http(?:s?)://(?:www\.)?youtu(?:be\.com\/watch\?v=|\.be\/)([\w\-\_]{11})(\?(amp;)?[\w\=]*|$)', url):
+            if not re.search('http(?:s?)://(?:www\.)?youtu(?:be\.com\/watch\?v=|\.be\/)([\w\-\_]{11})((amp;)?[\w\=]*|$)', url):
                 return self.make_output_data('YouTube url "' + url + '" abnormal', err=True)
         
         try:
@@ -473,5 +473,4 @@ class InputHandler:
 
         now = datetime.datetime.today()
         self.audio_players.clips_thread.clip_schedule = now
-        return self.make_output_data('clip scheduled for ' + str(now[:-7:]))
-
+        return self.make_output_data('clip scheduled for ' + str(now)[:-7:])

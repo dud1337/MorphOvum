@@ -24,4 +24,7 @@
 
 	ProxyPass / http://127.0.0.1:8139/
 	ProxyPassReverse / http://127.0.0.1:8139/
+
+	# Websocket. Requires: a2enmod proxy_wstunnel
+	ProxyPass /notify ws://127.0.0.1:8140
 </VirtualHost>

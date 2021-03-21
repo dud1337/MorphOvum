@@ -1,6 +1,8 @@
+asyncio
 decorator
 flask_limiter
 flask_restful
 python-vlc
 pyyaml
 requests
+websockets

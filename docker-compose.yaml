@@ -8,6 +8,7 @@ services:
     ports:
       - '8138:8138'
       - '8139:8139'
+      - '8140:8140'
     volumes:
       - ./samples/music:/fm/music
       - ./samples/ambience:/fm/ambience

@@ -11,7 +11,7 @@
   ███   (_)\/|_|| | |   ███  
     ███               ███    
        ███         ███       
-v0.10     █████████  20210315
+v0.11     █████████  20210321
 ```
 ## Table of Contents
 * [About](#about)
@@ -28,20 +28,21 @@ v0.10     █████████  20210315
 
 
 ## About
-Morph Ovum is your free and open source community radio service.
+Morph Ovum is a free and open source community radio service.
 
+* HTTP streams your radio's audio
 * No sound card and no desktop environment required
 * 3 audio sources (*all optional*):
   * Music (*e.g. smooth jazz*)
   * Ambience (*e.g. distant thunderstorms*)
   * Clips: Approximately every n minutes, play an audio clip (*e.g. "you're listening to morph ovum!"*)
 * Provides a [Flash-RESTful](https://flask-restful.readthedocs.io/en/latest/index.html)-based API for real-time control
-* HTTP streams your radio's audio
+* Provides a websocket for frontends to avoid polling
 * Plays anything [VLC Media Player](https://www.videolan.org/vlc/) can play:
   * Your personal library
   * An [airsonic](https://github.com/airsonic/airsonic) playlist
   * An internet radio station
-  * A YouTube playlist
+  * YouTube videos
   * ...
 
 
@@ -55,14 +56,15 @@ services:
         stdin_open: true
         tty: true
         ports:
-        	- '8138:8138'
-        	- '8139:8139'
+            - '8138:8138'
+            - '8139:8139'
+            - '8140:8140'
 #       volumes:
 #           - /path/to/your/music:/fm/music
 #           - /path/to/your/ambience:/fm/ambience
 #           - /path/to/your/clips:/fm/clips
 #           - /path/to/your/playlists:/fm/playlists
-#			- /path/to/your/config_dir:/fm/conf
+#           - /path/to/your/config_dir:/fm/conf
         environment:
         	- MORPH_OVUM_PASSWORD=changeme	# not used if config_dir is given
         	- TZ="Europe/Zurich"
@@ -216,12 +218,14 @@ The API listens by default on http://127.0.0.1:8139/api if ran via the above doc
 ### Python Requirements
 Obtained by docker container automatically. See `requirements.txt`.
 ```
+asyncio
 decorator
 flask_limiter
 flask_restful
 python-vlc
 pyyaml
 requests
+websockets
 ```
 
 ### File Purposes

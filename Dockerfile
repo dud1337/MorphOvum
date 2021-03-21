@@ -18,7 +18,7 @@ MAINTAINER dud1337 <grant@dud.li>
 #
 
 USER root
-EXPOSE 8138 8139
+EXPOSE 8138 8139 8140
 
 # Install VLC & Pulse Audio
 RUN apt update && apt install -y vlc python3-pip

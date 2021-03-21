@@ -4,7 +4,8 @@
 #   
 #   1. Defines config.yaml loader & validation functions
 #   2. Define functions for VLC library classes
-#   3. Define AudioPlayers class
+#   3. Define nofication websockets server class
+#   4. Define AudioPlayers class
 #       4 VLC Instances
 #           1 Streams the pulse audio virtual sink
 #           3 Audio players that play to the virtual sink
@@ -12,7 +13,7 @@
 #               2. Ambience
 #               3. Clips
 #       1 ClipsThread
-#   4. Define ClipsThread Thread
+#   5. Define ClipsThread Thread
 #       Manages clip playing times
 #       
 ######################################################################
@@ -26,6 +27,8 @@ import sys
 import yaml
 import datetime
 import socket
+import asyncio
+import websockets
 from threading import Thread
 from time import sleep
 from random import choice, normalvariate, shuffle
@@ -368,9 +371,64 @@ def audio_file_dir_walk(directory, allowed_file_extensions={'mp3','wav'}):
 
     return music_file_list
 
+
 ######################################################################
 #
-#   3. Define AudioPlayers Class
+#   3. Define nofication websockets server class
+#
+######################################################################
+class NotificationWebsocketsServer:
+    '''Creates a websocket server for clients to connect to and receive
+    updates about media list changes. Allows not to have to poll for updates'''
+    users = set()
+    music_change = False
+    ambience_change = False
+
+    def __init__(self):
+        new_loop = asyncio.new_event_loop()
+        start_server = websockets.serve(self.handler, '0.0.0.0', 8140, loop=new_loop)
+        t = Thread(target=self.start_loop, args=(new_loop, start_server))
+        t.start()
+
+    async def register(self, websocket):
+        self.users.add(websocket)
+
+    async def unregister(self, websocket):
+        self.users.remove(websocket)
+
+    async def handler(self, websocket, path):
+        await self.register(websocket)
+        await websocket.send('welcome')
+        try:
+            while True:
+                await asyncio.sleep(1)
+                if self.music_change:
+                    self.music_change = False
+                    await self.music_change_notify()
+                if self.ambience_change:
+                    self.ambience_change = False
+                    await self.ambience_change_notify()
+        finally:
+            await self.unregister(websocket)
+
+    def start_loop(self, loop, server):
+        loop.run_until_complete(server)
+        loop.run_forever()
+
+    async def music_change_notify(self):
+        if self.users:
+            for user in self.users:
+                await user.send('music_changed')
+
+    async def ambience_change_notify(self):
+        if self.users:
+            for user in self.users:
+                await user.send('ambience_changed')
+
+
+######################################################################
+#
+#   4. Define AudioPlayers Class
 #
 ######################################################################
 class AudioPlayers:
@@ -397,14 +455,16 @@ class AudioPlayers:
         self.mp_music.set_media_list(self.ml_music)
         self.mp_ambience.set_media_list(self.ml_ambience)
 
-        # 3. Event managers (Song history)
+        # 3. Event managers (Song history & websocket notifications)
+        self.notification_server = NotificationWebsocketsServer()
         self.em_music = self.mp_music.get_media_player().event_manager()
         self.history_music = []
         self.em_ambience = self.mp_ambience.get_media_player().event_manager()
         self.history_ambience = []
 
-        def update_history_list(event, self, music_or_ambience):
-            '''callback function for event managers to store track history'''
+        def media_changed_event(event, self, music_or_ambience):
+            '''callback function for event managers to store track history and notify websockets clients of track changes'''
+            # update history
             mp = getattr(self, 'mp_' + music_or_ambience)
             history = getattr(self, 'history_' + music_or_ambience)
             if len(history) == 101:
@@ -412,8 +472,12 @@ class AudioPlayers:
             history.append(media_list_player_get_song(mp))
             setattr(self, 'history_' + music_or_ambience, history)
 
-        self.em_music.event_attach(vlc.EventType.MediaPlayerMediaChanged, update_history_list, self, 'music')
-        self.em_ambience.event_attach(vlc.EventType.MediaPlayerMediaChanged, update_history_list, self, 'ambience')
+            # set notificatoin server thread to notify
+            if self.notification_server.users:
+                setattr(self.notification_server, music_or_ambience + '_change', True)
+
+        self.em_music.event_attach(vlc.EventType.MediaPlayerMediaChanged, media_changed_event, self, 'music')
+        self.em_ambience.event_attach(vlc.EventType.MediaPlayerMediaChanged, media_changed_event, self, 'ambience')
         
         # 4. Clips need a special Thread
         self.clips_thread = Clips(self)
@@ -488,9 +552,10 @@ class AudioPlayers:
         self.mp_vaudio.stop()
         self.mp_music.get_media_player().audio_set_volume(100)
 
+
 ######################################################################
 #
-#   4. Define ClipsThread Thread
+#   5. Define ClipsThread Thread
 #       Manages clip playing times
 #
 ######################################################################
