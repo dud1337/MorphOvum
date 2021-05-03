@@ -19,8 +19,8 @@
 
 	RequestHeader set X-Forwarded-Proto "https"
 
-	ProxyPass /live http://127.0.0.1:8138
-	ProxyPassReverse /live http://127.0.0.1:8138
+	ProxyPass /listen.mp3 http://127.0.0.1:8138
+	ProxyPassReverse /listen.mp3 http://127.0.0.1:8138
 
 	ProxyPass / http://127.0.0.1:8139/
 	ProxyPassReverse / http://127.0.0.1:8139/

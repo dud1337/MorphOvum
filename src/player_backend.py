@@ -443,7 +443,7 @@ class AudioPlayers:
         self.config_data = config_data
 
         # 1. VLC instance and its players
-        self.i = vlc.Instance('--quiet --no-video --sout-http-mime=audio/mpeg')
+        self.i = vlc.Instance('--quiet --no-video --sout-http-mime=audio/mpeg --no-http-forward-cookies')
         self.mp_vaudio = self.i.media_player_new()
         self.mp_music = self.i.media_list_player_new()
         self.mp_ambience = self.i.media_list_player_new()
