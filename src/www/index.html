@@ -150,7 +150,7 @@
   } else {
     new_uri = "ws:";
   }
-  new_uri += "//" + loc.host + loc.pathname + '/notify';
+  new_uri += "//" + loc.host + loc.pathname + 'notify';
   const ws = new WebSocket(new_uri)
   const playButton = document.querySelector('.play.button')
   const audioPlayer = new Audio()
