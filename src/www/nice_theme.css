@@ -3,7 +3,7 @@
     align-items: flex-start;
     justify-content: space-between;
     align-items: center;
-    width: 300px;
+    width: 270px;
 }
 
 #volume_control {
@@ -13,10 +13,10 @@
 .slider {
   -webkit-appearance: none;
   width: 200px;
-  height: 8px;
-  background: linear-gradient(to right, #000, rgb(98,88,68));
-  outline: none;
+  height: 16px;
+  background: linear-gradient(to right, #000, rgb(78,68,48));
   border-radius: 8px;
+  border: 3px black solid;
 }
 rgb(98, 88, 68);
 

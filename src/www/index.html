@@ -15,7 +15,7 @@
       <p>a free and open source community radio service</p>
       <p><a href="./control_panel/">Control Panel</a></p>
       <div id="controls">
-          <button id="play_button" class="play button">&#x23f5;</button>
+          <button id="play_button" class="play button">&#9654;</button>
           <input type="range" id="volume-control" class="slider" min="0" max="100" value="40" step="10">
       </div>
       <div id="last_played_songs"></div>
@@ -41,31 +41,48 @@
   </div>
 </div>
 <script>
-  var loc = window.location, new_uri;
-  if (loc.protocol === "https:") {
-    new_uri = "wss:";
-  } else {
-    new_uri = "ws:";
-  }
-  new_uri += "//" + loc.host + loc.pathname + 'notify';
-  const ws = new WebSocket(new_uri)
   const playButton = document.querySelector('.play.button')
   const audioPlayer = new Audio()
-
-
   audioPlayer.volume = 0.40;
+  document.getElementById('volume-control').value=40;
 
-  ws.addEventListener('message', (event) => {
-    switch (event.data) {
-      case 'music_changed':
-        updateCurrentTrack()
-	  buildPlaylist()
-        return
-      case 'ambience_changed':
-	  updateCurrentAmbience()
-        return
-    }
-  })
+  function connectWebSocket() {
+      var loc = window.location, new_uri;
+      if (loc.protocol === "https:") {
+        new_uri = "wss:";
+      } else {
+        new_uri = "ws:";
+      }
+      new_uri += "//" + loc.host + loc.pathname + 'notify';
+      const ws = new WebSocket(new_uri)
+  
+      ws.addEventListener('message', (event) => {
+        switch (event.data) {
+          case 'music_changed':
+            updateCurrentTrack()
+            buildPlaylist()
+            return
+          case 'ambience_changed':
+            updateCurrentAmbience()
+            return
+        }
+      })
+      ws.addEventListener("close", () => {
+	reconnectWebSocket(); // Attempt to reconnect after connection closure
+      });
+
+      ws.addEventListener("error", (error) => {
+	reconnectWebSocket(); // Attempt to reconnect on error
+      });
+  }
+
+  function reconnectWebSocket() {
+    setTimeout(() => {
+      connectWebSocket();
+    }, 1000);
+  }
+
+  connectWebSocket(); 
 
   const audio_resource = './listen.mp3'
 
@@ -83,7 +100,7 @@
     }
 
     audioPlayer.pause()
-    element.innerHTML = '&#x23f5;';
+    element.innerHTML = '&#9654;';
     playing = false
   })
 
@@ -107,6 +124,7 @@
   volume.addEventListener("input", function(e) {
     audioPlayer.volume = e.currentTarget.value / 100;
   });
+  
 
   function buildPlaylist() {
     fetch('./api/music/history')
