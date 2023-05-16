@@ -28,10 +28,11 @@ RUN mkdir /fm
 
 # Python 3 depenendcies
 COPY requirements.txt /fm/requirements.txt
-RUN pip install -r /fm/requirements.txt
+RUN python3 -m pip install -r /fm/requirements.txt --break-system-packages
 
 # Provide morphovum source code
 ADD src /fm/src
+COPY res/MorphOvum.gif /fm/src/www/MorphOvum.gif
 
 # Prepare subdirectories
 RUN mkdir /fm/ambience /fm/clips /fm/music /fm/playlists /fm/conf

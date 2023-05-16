@@ -146,6 +146,8 @@ def bind_flask_resources(flask_api, class_instance):
 ######################################################################
 def web_ui_adder(api):
     api.add_resource(WebUI_index, '/')
+    api.add_resource(WebUI_gif, '/MorphOvum.gif')
+    api.add_resource(WebUI_index_css, '/nice_theme.css')
     api.add_resource(WebUI_cp_index, '/control_panel/')
     api.add_resource(WebUI_cp_js, '/control_panel/control_panel.js')
     api.add_resource(WebUI_cp_css, '/control_panel/control_panel.css')
@@ -157,6 +159,20 @@ class WebUI_index(Resource):
         with open('./www/index.html') as f:
             response = make_response(f.read())
         response.headers['Content-Type'] = 'text/html'
+        return response
+
+class WebUI_gif(Resource):
+    def get(self):
+        with open('./www/MorphOvum.gif', 'rb') as f:
+            response = make_response(f.read())
+        response.headers['Content-Type'] = 'image/gif'
+        return response
+
+class WebUI_index_css(Resource):
+    def get(self):
+        with open('./www/nice_theme.css') as f:
+            response = make_response(f.read())
+        response.headers['Content-Type'] = 'text/css'
         return response
 
 class WebUI_cp_index(Resource):
