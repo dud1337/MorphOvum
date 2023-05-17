@@ -54,6 +54,7 @@
         new_uri = "ws:";
       }
       new_uri += "//" + loc.host + loc.pathname + 'notify';
+    
       const ws = new WebSocket(new_uri)
   
       ws.addEventListener('message', (event) => {
@@ -68,18 +69,12 @@
         }
       })
       ws.addEventListener("close", () => {
-	reconnectWebSocket(); // Attempt to reconnect after connection closure
+	connectWebSocket(); // Attempt to reconnect after connection closure
       });
 
       ws.addEventListener("error", (error) => {
-	reconnectWebSocket(); // Attempt to reconnect on error
+	connectWebSocket(); // Attempt to reconnect on error
       });
-  }
-
-  function reconnectWebSocket() {
-    setTimeout(() => {
-      connectWebSocket();
-    }, 1000);
   }
 
   connectWebSocket(); 

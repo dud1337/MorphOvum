@@ -400,7 +400,7 @@ class NotificationWebsocketsServer:
         await self.register(websocket)
         await websocket.send('welcome')
         try:
-            while True:
+            while not websocket.closed:
                 await asyncio.sleep(1)
                 if self.music_change:
                     self.music_change = False
@@ -409,6 +409,7 @@ class NotificationWebsocketsServer:
                     self.ambience_change = False
                     await self.ambience_change_notify()
         finally:
+            await websocket.close()
             await self.unregister(websocket)
 
     def start_loop(self, loop, server):
