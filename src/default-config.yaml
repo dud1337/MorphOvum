@@ -58,7 +58,6 @@ startup_players:
 #     ambience  : /fm/ambience
 #     clips     : /fm/clips
 #   playlist_dir: /fm/playlists
-# 
 audio_dirs:
   music     : /fm/music
   ambience  : /fm/ambience

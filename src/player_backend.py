@@ -81,6 +81,17 @@ def load_config(config_file='default-config.yaml'):
             return True
         return False
 
+    def check_interface(interface):
+        '''Check if interface is viable'''
+        try:
+            socket.inet_aton(interface)
+            with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as test_socket:
+                test_socket.bind((interface, 0))
+                return False
+        except:
+            eprint(f'Error: interface {interface} not useable')
+            return True
+
     def check_port(port):
         '''Check port is in correct range and can be opened'''
         if port not in range(1, 2**16):
@@ -124,7 +135,7 @@ def load_config(config_file='default-config.yaml'):
         },
         'interface':{
             'default'   :'0.0.0.0',
-            'validator' :None 
+            'validator' :check_interface
         },
         'stream_port':{
             'default'   :8138,
