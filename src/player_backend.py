@@ -357,7 +357,7 @@ def modify_media_list(mrl, media_list, media_player, shuffle=True, append=False,
         media_list_shuffle(media_list)
 
     if switch_current:
-        media_player.play_item(list_of_media[0])
+        media_player.play_item(choice(list_of_media))
 
 def audio_file_dir_walk(directory, allowed_file_extensions={'mp3','wav'}):
     '''VLC 3  does not auto-expand directories in media isntances.
