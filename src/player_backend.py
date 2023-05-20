@@ -30,7 +30,7 @@ import socket
 import asyncio
 import websockets
 from threading import Thread
-from time import sleep
+from time import sleep, time
 from random import choice, normalvariate, shuffle
 
 os.environ['PULSE_SINK'] = 'virtual'
@@ -45,88 +45,112 @@ def eprint(*args, **kwargs):
 #   1. Defines config.yaml loader & validation functions
 #
 ######################################################################
+def check_missing(key, validator_conf, test_conf): 
+    '''Checks for missing config keys'''
+    if key not in test_conf:
+        tmp_type = type(dict()) if 'default' not in validator_conf[key] else type(validator_conf[key]['default'])
+        eprint('Error: Missing key ' + key + '. Requires ' + str(tmp_type))
+        if 'validator' not in validator_conf[key]:
+            for subkey in validator_conf[key]:
+                eprint('\tMissing subkey ' + subkey + ' => ' + key + '. Requires ' + str(type(validator_conf[key][subkey]['default'])))
+        return True
+    return False
+
+def check_type(key, validator_conf, test_conf):
+    '''Checks for correct types'''
+    if 'validator' in validator_conf[key]:
+        tmp_type = type(validator_conf[key]['default'])
+    else:
+        tmp_type = type(validator_conf[key])
+
+    if not tmp_type == type(test_conf[key]):
+        eprint('Error: Bad type ' + key + '. Requires ' + str(type(validator_conf[key]['default'])) + ' not ' + str(type(test_conf[key])))
+        if 'validator' not in validator_conf[key]:
+            for subkey in validator_conf[key]:
+                eprint('Error: Missing subkey ' + subkey + ' => ' + key + '. Requires ' + str(type(validator_conf[key][subkey]['default'])))
+        return True
+    return False
+
+def check_password(password):
+    '''Check password is long enough'''
+    if len(password) < 8:
+        eprint('Error: admin_password is required to be 8 more characters. Got ' + str(len(password)))
+        return True
+    return False
+
+def check_interface(interface):
+    '''Check if interface is viable'''
+    try:
+        socket.inet_aton(interface)
+        with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as test_socket:
+            test_socket.bind((interface, 0))
+            return False
+    except:
+        eprint(f'Error: interface {interface} not useable')
+        return True
+
+def check_port(port):
+    '''Check port is in correct range and can be opened'''
+    if port not in range(1, 2**16):
+        eprint('Error: port ' + str(port) + ' not in range 1-65535')
+        return True
+    try:
+        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        s.bind(('127.0.0.1', port))
+        s.listen(1)
+        s.close()
+    except socket.error as serr:
+        eprint('Error: could not open TCP port ' + str(port) + ' because ' + str(serr))
+        return True
+    return False
+
+def check_directory(directory):
+    if not os.path.isdir(directory):
+        eprint('Error: \'' + directory + '\' is not a directory')
+        return True
+    return False
+
+def check_mrl(mrl, max_time_to_wait=3):
+    test_instance = vlc.Instance()
+    player = test_instance.media_player_new()
+    player.audio_set_volume(0)
+
+    if os.path.isdir(mrl):
+        media = test_instance.media_new(audio_file_dir_walk(mrl, just_one=True))
+    else:
+        media = test_instance.media_new(mrl)
+
+    player.set_media(media)
+
+
+    player.play()
+
+    start_time = time()
+    while time() - start_time < max_time_to_wait:
+        if player.get_state() == vlc.State.Playing:
+            sleep(0.5)
+            played = player.get_state() == vlc.State.Playing
+            break
+
+    player.stop()
+
+    return not played
+
+def check_clip_mean(mean_minutes):
+    if mean_minutes < 1:
+       eprint('Error: clip_mean must be > 0. Got ' + str(mean_minutes))
+       return True
+    return False
+
+def check_clip_std_deviation(std_deviation_minutes):
+    if std_deviation_minutes < 0:
+        eprint('Error: clip_std_deviation must be >= 0. Got ' + str(std_deviation_minutes))
+        return True
+    return False
+
 def load_config(config_file='default-config.yaml'):
     '''loads config.yaml file
     checks and reports potential errors'''
-    def check_missing(key, validator_conf, test_conf): 
-        '''Checks for missing config keys'''
-        if key not in test_conf:
-            tmp_type = type(dict()) if 'default' not in validator_conf[key] else type(validator_conf[key]['default'])
-            eprint('Error: Missing key ' + key + '. Requires ' + str(tmp_type))
-            if 'validator' not in validator_conf[key]:
-                for subkey in validator_conf[key]:
-                    eprint('\tMissing subkey ' + subkey + ' => ' + key + '. Requires ' + str(type(validator_conf[key][subkey]['default'])))
-            return True
-        return False
-    
-    def check_type(key, validator_conf, test_conf):
-        '''Checks for correct types'''
-        if 'validator' in validator_conf[key]:
-            tmp_type = type(validator_conf[key]['default'])
-        else:
-            tmp_type = type(validator_conf[key])
-
-        if not tmp_type == type(test_conf[key]):
-            eprint('Error: Bad type ' + key + '. Requires ' + str(type(validator_conf[key]['default'])) + ' not ' + str(type(test_conf[key])))
-            if 'validator' not in validator_conf[key]:
-                for subkey in validator_conf[key]:
-                    eprint('Error: Missing subkey ' + subkey + ' => ' + key + '. Requires ' + str(type(validator_conf[key][subkey]['default'])))
-            return True
-        return False
-
-    def check_password(password):
-        '''Check password is long enough'''
-        if len(password) < 8:
-            eprint('Error: admin_password is required to be 8 more characters. Got ' + str(len(password)))
-            return True
-        return False
-
-    def check_interface(interface):
-        '''Check if interface is viable'''
-        try:
-            socket.inet_aton(interface)
-            with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as test_socket:
-                test_socket.bind((interface, 0))
-                return False
-        except:
-            eprint(f'Error: interface {interface} not useable')
-            return True
-
-    def check_port(port):
-        '''Check port is in correct range and can be opened'''
-        if port not in range(1, 2**16):
-            eprint('Error: port ' + str(port) + ' not in range 1-65535')
-            return True
-        try:
-            s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            s.bind(('127.0.0.1', port))
-            s.listen(1)
-            s.close()
-        except socket.error as serr:
-            eprint('Error: could not open TCP port ' + str(port) + ' because ' + str(serr))
-            return True
-        return False
-
-    def check_directory(directory):
-        if not os.path.isdir(directory):
-            eprint('Error: \'' + directory + '\' is not a directory')
-            return True
-        return False
-
-    def check_mrl(mrl):
-        return False
-
-    def check_clip_mean(mean_minutes):
-        if mean_minutes < 1:
-           eprint('Error: clip_mean must be > 0. Got ' + str(mean_minutes))
-           return True
-        return False
-
-    def check_clip_std_deviation(std_deviation_minutes):
-        if std_deviation_minutes < 0:
-            eprint('Error: clip_std_deviation must be >= 0. Got ' + str(std_deviation_minutes))
-            return True
-        return False
 
     validator_conf = {
         'admin_password':{
@@ -345,6 +369,13 @@ def modify_media_list(mrl, media_list, media_player, shuffle=True, append=False,
         media_list_clear(media_list)
 
     if os.path.isdir(mrl):
+        if switch_current:
+            # this is placed here as if the dir walk takes time, the time to change can feel long
+            first_track = vlc.Media(audio_file_dir_walk(mrl, just_one=True))
+            media_list.add_media(first_track)
+            media_list_flatten(media_list)
+            media_player.play_item(first_track)
+            
         list_of_media = [vlc.Media(audio_file) for audio_file in audio_file_dir_walk(mrl)]
     else:
         list_of_media = [vlc.Media(mrl)]
@@ -356,10 +387,10 @@ def modify_media_list(mrl, media_list, media_player, shuffle=True, append=False,
     if shuffle:
         media_list_shuffle(media_list)
 
-    if switch_current:
-        media_player.play_item(list_of_media[0])
+    if switch_current and not os.path.isdir(mrl):
+        media_player.play_item(choice(list_of_media))
 
-def audio_file_dir_walk(directory, allowed_file_extensions={'mp3','wav'}):
+def audio_file_dir_walk(directory, allowed_file_extensions={'mp3', 'wav', 'flac'}, just_one=False):
     '''VLC 3  does not auto-expand directories in media isntances.
     This function walks recursively through directories to obtain all allowed
     audio files and creates a list of file locations'''
@@ -372,6 +403,10 @@ def audio_file_dir_walk(directory, allowed_file_extensions={'mp3','wav'}):
     re_exp += ')$'
 
     music_file_list = []
+    dir_list = os.listdir(directory)
+    if just_one:
+        shuffle(dir_list)
+        
     for file_or_directory in os.listdir(directory):
         i_path = os.path.join(directory, file_or_directory)
         if os.path.isfile(i_path):
@@ -379,6 +414,8 @@ def audio_file_dir_walk(directory, allowed_file_extensions={'mp3','wav'}):
                 music_file_list.append(i_path)
         elif os.path.isdir(i_path):
             music_file_list += audio_file_dir_walk(i_path)
+        if just_one and music_file_list:
+            return choice(music_file_list)
 
     return music_file_list
 

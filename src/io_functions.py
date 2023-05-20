@@ -175,12 +175,14 @@ class InputHandler:
             if r.status_code != 200:
                 return self.make_output_data('url ' + url + ' returned status code ' + str(r.status_code), err=True)
         except requests.exceptions.RequestException as e:
-            return self.make_output_data('GET request to url ' + url + ' failed with error message: ' + e, err=True)
+            return self.make_output_data('GET request to url ' + url + ' failed with error message: ' + str(e), err=True)
 
         mp = getattr(self.audio_players, 'mp_' + music_or_ambience)
         ml = getattr(self.audio_players, 'ml_' + music_or_ambience)
 
         if wp_type == 'wp':
+            if player_backend.check_mrl(url):
+                return self.make_output_data(f'Error: VLC cannot play {url}. Not added.')
             player_backend.modify_media_list(
                 url,
                 ml,
@@ -191,6 +193,8 @@ class InputHandler:
             return self.make_output_data(music_or_ambience + ' playing: ' + track)
 
         elif wp_type == 'wc':
+            if player_backend.check_mrl(url):
+                return self.make_output_data(f'Error: VLC cannot play {url}. Not added.')
             player_backend.modify_media_list(
                 url,
                 ml,
@@ -198,8 +202,7 @@ class InputHandler:
                 append=True,
                 shuffle=False
             )
-            track = player_backend.media_list_player_get_song(mp)
-            return self.make_output_data(music_or_ambience + ' enqeued with: ' + track)
+            return self.make_output_data(music_or_ambience + ' enqeued with: ' + url)
 
     def current_funcs(self, music_or_ambience, track_or_playlist):
         '''Returns current song or list of media currently in a player's MediaList'''
