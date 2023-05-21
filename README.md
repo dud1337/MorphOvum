@@ -181,6 +181,7 @@ The API listens by default on http://127.0.0.1:8139/api if ran via the above doc
 | `ambience/history` | | Returns up to 100 of the last played tracks for a player |
 | `ambience/skip` | `admin` `busy` `patience` | Skip the current ambience track |
 | `ambience/toggle` | `admin` `patience` | Toggle the playing of the ambience player |
+| `ambience/repeat` | `admin` `patience` | Toggle single-track repeat on ambience player |
 | `clips/now` | `admin` `patience` | Schedule a clip to be played now |
 | `clips/toggle` | `admin` | Toggle the playing of clips |
 | `help` | | Return the available commands and their arguments, if any |
@@ -189,6 +190,7 @@ The API listens by default on http://127.0.0.1:8139/api if ran via the above doc
 | `music/history` | | Returns the last music tracks played (max 100) |
 | `music/skip` | `admin` `busy` `patience` | Skip the currently playing music track |
 | `music/toggle` | `admin` `patience` | Toggle the playing of the music player |
+| `music/repeat` | `admin` `patience` | Toggle single-track repeat on music player |
 
 **Flags**
 
