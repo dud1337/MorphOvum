@@ -1,7 +1,7 @@
 ######################################################################
 #
 #   AudioPlayers Functions
-#   
+#
 #   1. Defines config.yaml loader & validation functions
 #   2. Define functions for VLC library classes
 #   3. Define nofication websockets server class
@@ -15,23 +15,24 @@
 #       1 ClipsThread
 #   5. Define ClipsThread Thread
 #       Manages clip playing times
-#       
+#
 ######################################################################
 from __future__ import print_function
-import vlc
-#   "media list player is a layer of inconvenience that you're better off not using"
-#               - anon, #VideoLAN:matrix.org #videolan at freenode or irc.videolan.org
 import os
 import re
 import sys
-import yaml
 import datetime
 import socket
 import asyncio
-import websockets
 from threading import Thread
 from time import sleep, time
 from random import choice, normalvariate, shuffle
+import yaml
+
+import websockets
+import vlc
+#   "media list player is a layer of inconvenience that you're better off not using"
+#               - anon, #VideoLAN:matrix.org #videolan at freenode or irc.videolan.org
 
 os.environ['PULSE_SINK'] = 'virtual'
 Debug = True
@@ -45,7 +46,7 @@ def eprint(*args, **kwargs):
 #   1. Defines config.yaml loader & validation functions
 #
 ######################################################################
-def check_missing(key, validator_conf, test_conf): 
+def check_missing(key, validator_conf, test_conf):
     '''Checks for missing config keys'''
     if key not in test_conf:
         tmp_type = type(dict()) if 'default' not in validator_conf[key] else type(validator_conf[key]['default'])
@@ -138,8 +139,8 @@ def check_mrl(mrl, max_time_to_wait=3):
 
 def check_clip_mean(mean_minutes):
     if mean_minutes < 1:
-       eprint('Error: clip_mean must be > 0. Got ' + str(mean_minutes))
-       return True
+        eprint('Error: clip_mean must be > 0. Got ' + str(mean_minutes))
+        return True
     return False
 
 def check_clip_std_deviation(std_deviation_minutes):
@@ -244,7 +245,7 @@ def load_config(config_file='default-config.yaml'):
         if 'validator' in validator_conf[key] and validator_conf[key]['validator']:
             return validator_conf[key]['validator'](test_conf[key])
         return False
-   
+
     def validate_conf(validator_conf, instance_conf, parent_keys=[]):
         '''Validate enire config'''
         error = False
@@ -261,7 +262,7 @@ def load_config(config_file='default-config.yaml'):
     error = validate_conf(validator_conf, instance_conf)
 
     # hacky port checkin'
-    if 'stream_port' in instance_conf and 'io_port' in instance_conf: 
+    if 'stream_port' in instance_conf and 'io_port' in instance_conf:
         if instance_conf['stream_port'] == instance_conf['io_port']:
             eprint('Error: stream_port and io_port are both ' + str(instance_conf['stream_port']))
             error |= error
@@ -352,12 +353,12 @@ def media_list_shuffle(media_list):
     '''Shuffles a vlc.MediaList'''
     media_list_flatten(media_list)
     shuffled_list = []
-    
+
     shuffled_indexes = list(range(media_list.count()))
     shuffle(shuffled_indexes)
     for i in range(media_list.count()):
         shuffled_list.append(media_list[shuffled_indexes[i]])
-    
+
     media_list_clear(media_list)
     for media in shuffled_list:
         media_list.add_media(media)
@@ -375,7 +376,7 @@ def modify_media_list(mrl, media_list, media_player, shuffle=True, append=False,
             media_list.add_media(first_track)
             media_list_flatten(media_list)
             media_player.play_item(first_track)
-            
+
         list_of_media = [vlc.Media(audio_file) for audio_file in audio_file_dir_walk(mrl)]
     else:
         list_of_media = [vlc.Media(mrl)]
@@ -406,7 +407,7 @@ def audio_file_dir_walk(directory, allowed_file_extensions={'mp3', 'wav', 'flac'
     dir_list = os.listdir(directory)
     if just_one:
         shuffle(dir_list)
-        
+
     for file_or_directory in os.listdir(directory):
         i_path = os.path.join(directory, file_or_directory)
         if os.path.isfile(i_path):
@@ -430,7 +431,9 @@ class NotificationWebsocketsServer:
     updates about media list changes. Allows not to have to poll for updates'''
     users = set()
     music_change = False
+    music_paused = False
     ambience_change = False
+    ambience_paused = False
 
     def __init__(self):
         new_loop = asyncio.new_event_loop()
@@ -452,10 +455,16 @@ class NotificationWebsocketsServer:
                 await asyncio.sleep(1)
                 if self.music_change:
                     self.music_change = False
-                    await self.music_change_notify()
+                    await self.change_notify('music', 'changed')
                 if self.ambience_change:
                     self.ambience_change = False
-                    await self.ambience_change_notify()
+                    await self.change_notify('ambience', 'changed')
+                if self.music_paused:
+                    self.music_paused = False
+                    await self.change_notify('music', 'paused')
+                if self.ambience_paused:
+                    self.ambience_paused = False
+                    await self.change_notify('ambience', 'paused')
         finally:
             await websocket.close()
             await self.unregister(websocket)
@@ -464,15 +473,10 @@ class NotificationWebsocketsServer:
         loop.run_until_complete(server)
         loop.run_forever()
 
-    async def music_change_notify(self):
+    async def change_notify(self, music_or_ambience, change_type):
         if self.users:
             for user in self.users:
-                await user.send('music_changed')
-
-    async def ambience_change_notify(self):
-        if self.users:
-            for user in self.users:
-                await user.send('ambience_changed')
+                await user.send(f'{music_or_ambience}_{change_type}')
 
 
 ######################################################################
@@ -521,13 +525,22 @@ class AudioPlayers:
             history.append(media_list_player_get_song(mp))
             setattr(self, 'history_' + music_or_ambience, history)
 
-            # set notificatoin server thread to notify
+            # set notification server thread to notify
             if self.notification_server.users:
                 setattr(self.notification_server, music_or_ambience + '_change', True)
 
         self.em_music.event_attach(vlc.EventType.MediaPlayerMediaChanged, media_changed_event, self, 'music')
         self.em_ambience.event_attach(vlc.EventType.MediaPlayerMediaChanged, media_changed_event, self, 'ambience')
-        
+
+        def media_paused_event(event, self, music_or_ambience):
+            '''Callback function for event managers to notify websockets clients of track pauses'''
+            # set notification server thread to notify
+            if self.notification_server.users:
+                setattr(self.notification_server, music_or_ambience + '_paused', True)
+
+        self.em_music.event_attach(vlc.EventType.MediaPlayerStopped, media_paused_event, self, 'music')
+        self.em_ambience.event_attach(vlc.EventType.MediaPlayerStopped, media_paused_event, self, 'ambience')
+
         # 4. Clips need a special Thread
         self.clips_thread = Clips(self)
         self.clips_thread.start()
@@ -540,7 +553,7 @@ class AudioPlayers:
         # vaudio
         transcode_cmd = 'sout=#transcode{vcodec=none,acodec=mp3,ab=320,channels=2,samplerate=44100}:'
         transcode_cmd += 'http{mux=mp3,dst=' + str(self.config_data['interface']) + ':' + str(self.config_data['stream_port']) + '}'
-        
+
         full_cmd = [
             transcode_cmd,
             'sout-keep',
@@ -553,9 +566,9 @@ class AudioPlayers:
 
         # music
         if self.config_data['default_files']['music']:
-           modify_media_list(self.config_data['default_files']['music'], self.ml_music, self.mp_music)
+            modify_media_list(self.config_data['default_files']['music'], self.ml_music, self.mp_music)
         else:
-           modify_media_list(self.config_data['audio_dirs']['music'], self.ml_music, self.mp_music)
+            modify_media_list(self.config_data['audio_dirs']['music'], self.ml_music, self.mp_music)
         self.mp_music.set_playback_mode(vlc.PlaybackMode.loop)
         self.mp_music.get_media_player().audio_set_volume(100)
 
@@ -611,7 +624,7 @@ class AudioPlayers:
 class Clips(Thread):
     '''Handles the intermittment playing of sound clips
     Fades down other players for 2 seconds, plays a randomly-selected clip, then fades
-    the other plays back to their initial volume. If there is more than one clip 
+    the other plays back to their initial volume. If there is more than one clip
     available, then no clip will be repeated twice in a row'''
     # Handles the intermittent playing of sound clips
     def __init__(self, parent):
@@ -621,7 +634,7 @@ class Clips(Thread):
         self.mp_ambience = parent.mp_ambience
         self.clip_timing = parent.config_data['clip_timing']
         self.clips_dir = parent.config_data['audio_dirs']['clips']
-        
+
         self.clips_on = False
         self.clip_schedule = None       # or Datetime object
         self.last_played_clip = None    # prevent same clip twice in a row, if > 1
@@ -660,7 +673,7 @@ class Clips(Thread):
         self.mp_clips.set_media(clip)
         self.mp_clips.audio_set_volume(100)
         self.mp_clips.play()
-        
+
         sleep(0.5)
         while self.mp_clips.is_playing():
             sleep(0.5)

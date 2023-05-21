@@ -42,7 +42,7 @@ Morph Ovum is a free and open source community radio service.
   * Your personal library
   * An [airsonic](https://github.com/airsonic/airsonic) playlist
   * An internet radio station
-  * YouTube videos
+  * YouTube videos (Sometimes there's an arms race and VLC can't)
   * ...
 
 
