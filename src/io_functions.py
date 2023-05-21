@@ -1,6 +1,6 @@
 ######################################################################
 #
-#   IO Function Handler 
+#   IO Function Handler
 #
 #   1. Creates decorators to make function flags:
 #       Make function accessible via API (api)
@@ -58,7 +58,7 @@ def patience(func, *args, **kwargs):
     if diff < timeout:
         return {'msg':'Please wait ' + str(timeout - diff) + ' seconds', 'err':True, 'data':None}
     else:
-        io_instance.last_change = now 
+        io_instance.last_change = now
         return func(*args, **kwargs)
 
 def patience_flag(func):
@@ -127,7 +127,7 @@ class InputHandler:
 
         mp = getattr(self.audio_players, 'mp_' + music_or_ambience)
         ml = getattr(self.audio_players, 'ml_' + music_or_ambience)
-        
+
         if ls_type == 'lsp':
             player_backend.modify_media_list(
                 path,
@@ -169,7 +169,7 @@ class InputHandler:
         if re.search('http(?:s?)://?(?:www\.)?youtu\.?be(?:\.com)?', url):
             if not re.search('http(?:s?)://(?:www\.)?youtu(?:be\.com\/watch\?v=|\.be\/)([\w\-\_]{11})((amp;)?[\w\=]*|$)', url):
                 return self.make_output_data('YouTube url "' + url + '" abnormal', err=True)
-        
+
         try:
             r = requests.get(url)
             if r.status_code != 200:
@@ -206,18 +206,21 @@ class InputHandler:
 
     def current_funcs(self, music_or_ambience, track_or_playlist):
         '''Returns current song or list of media currently in a player's MediaList'''
+        mp = getattr(self.audio_players, 'mp_' + music_or_ambience)
+        is_playing = mp.is_playing()
+
         if track_or_playlist == 'track':
             mp = getattr(self.audio_players, 'mp_' + music_or_ambience)
             track = player_backend.media_list_player_get_song(mp)
 
-            return self.make_output_data(track, data=track)
+            return self.make_output_data(track, data={'track':track, 'is_playing':is_playing})
         elif track_or_playlist == 'playlist':
             ml = getattr(self.audio_players, 'ml_' + music_or_ambience)
             output_data = []
             for media in ml:
                 output_data.append(player_backend.media_get_song(media))
-    
-            return self.make_output_data(' '.join(output_data), data=output_data)
+
+            return self.make_output_data(' '.join(output_data), data={'playlist':output_data, 'is_playing':is_playing})
 
     def skip_funcs(self, music_or_ambience):
         '''Skips (runs next()) on the current track of a player'''
@@ -358,12 +361,12 @@ class InputHandler:
         try:
             playlist_number = int(playlist)
             playlist = sorted(os.listdir(self.audio_players.config_data['playlist_dir']))[playlist_number]
-            
+
         except:
             path = os.path.join(self.audio_players.config_data['playlist_dir'], playlist)
 
             if not os.path.isfile(path):
-                return self.make_output_data('"' + directory + '" is not a file', err=True)
+                return self.make_output_data('"' + path + '" is not a file', err=True)
             else:
                 player_backend.modify_media_list(path, self.audio_players.ml_music, self.audio_players.mp_music)
                 return self.make_output_data('ok! music set to: ' + playlist)
@@ -459,7 +462,7 @@ class InputHandler:
 
     @admin
     @api
-    def clips_toggle(self): 
+    def clips_toggle(self):
         '''Toggle the playing of clips'''
         self.audio_players.toggle_clips()
         on_off = 'on' if self.audio_players.clips_thread.clips_on else 'off'
