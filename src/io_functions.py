@@ -20,6 +20,7 @@ import decorator
 import re
 import requests
 from inspect import getfullargspec
+import vlc
 
 ######################################################################
 #
@@ -244,7 +245,21 @@ class InputHandler:
         else:
             mp.play()
             status = 'playing'
-        return self.make_output_data(music_or_ambience + ' is ' + status)
+        return self.make_output_data(f'{music_or_ambience} is {status}')
+
+    def repeat_toggle(self, music_or_ambience):
+        '''Toggles a player's single-track repeat status'''
+        mp = getattr(self.audio_players, 'mp_' + music_or_ambience)
+        repeating = getattr(self.audio_players, f'{music_or_ambience}_repeat')
+        if not repeating:
+            mp.set_playback_mode(vlc.PlaybackMode.repeat)
+            setattr(self.audio_players, f'{music_or_ambience}_repeat', True)
+            status = 'repeating current track'
+        else:
+            mp.set_playback_mode(vlc.PlaybackMode.loop)
+            setattr(self.audio_players, f'{music_or_ambience}_repeat', False)
+            status = 'repeating playlist'
+        return self.make_output_data(f'{music_or_ambience} is now {status}')
 
     def history_funcs(self, music_or_ambience):
         '''Returns up to 100 of the last played tracks for a player'''
@@ -330,6 +345,14 @@ class InputHandler:
     def music_toggle(self):
         '''Toggle the playing of the music player'''
         return self.player_toggle('music')
+
+    @admin
+    @api
+    @patience
+    @patience_flag
+    def music_repeat(self):
+        '''Toggle the repeat_mode of the music player'''
+        return self.repeat_toggle('music')
 
     @api
     def music_currenttrack(self):
@@ -444,6 +467,14 @@ class InputHandler:
     def ambience_toggle(self):
         '''Toggle the playing of the ambience player'''
         return self.player_toggle('ambience')
+
+    @admin
+    @api
+    @patience
+    @patience_flag
+    def ambience_repeat(self):
+        '''Toggle the repeat_mode of the music player'''
+        return self.repeat_toggle('ambience')
 
     @api
     def ambience_currenttrack(self):

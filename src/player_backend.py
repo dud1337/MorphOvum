@@ -502,6 +502,10 @@ class AudioPlayers:
         self.mp_ambience = self.i.media_list_player_new()
         self.mp_clips = self.i.media_player_new()
 
+        ## 1.1 VLC player metadata (limitation to pythonb-vlc makes this required)
+        self.music_repeat = False
+        self.ambience_repeat = False
+
         # 2. Playlists (MediaLists)
         self.ml_music = self.i.media_list_new()
         self.ml_ambience = self.i.media_list_new()
@@ -569,7 +573,9 @@ class AudioPlayers:
             modify_media_list(self.config_data['default_files']['music'], self.ml_music, self.mp_music)
         else:
             modify_media_list(self.config_data['audio_dirs']['music'], self.ml_music, self.mp_music)
-        self.mp_music.set_playback_mode(vlc.PlaybackMode.loop)
+        #there is no get_playback_mode or equiv for later
+        self.mp_music.set_playback_mode(vlc.PlaybackMode.loop) 
+        self.mp_music.playback_mode_meta = vlc.PlaybackMode.loop
         self.mp_music.get_media_player().audio_set_volume(100)
 
         # ambience
