@@ -390,6 +390,9 @@ def modify_media_list(mrl, media_list, media_player, shuffle=True, append=False,
 
     if switch_current and not os.path.isdir(mrl):
         media_player.play_item(choice(list_of_media))
+        if '.m3u' in mrl:
+            # playlists need to be told to play the next track
+            media_player.next()
 
 def audio_file_dir_walk(directory, allowed_file_extensions={'mp3', 'wav', 'flac'}, just_one=False):
     '''VLC 3  does not auto-expand directories in media isntances.

@@ -167,10 +167,11 @@ The API listens by default on http://127.0.0.1:8139/api if ran via the above doc
 | `music/lsa` | `directory_or_file` | `admin` `busy` `patience` | Add and shuffle a file or the contents of a subdirectory in the music directory |
 | `music/lsc` | `directory_or_file` | `admin` `busy` `patience` | Enqueue a file or the contents of a subdirectory in the music directory |
 | `music/lsp` | `directory_or_file` | `admin` `busy` `patience` | Play a file or the contents of a subdirectory in the music directory |
-| `music/playlist` | `playlist` | `admin` `patience` | Plays a playlist from available playlists. An int n input will play the nth playlist |
-| `music/playlists` | `playlist` | | Lists available playlists |
 | `music/wc` | `url` | `admin` `busy` `patience` | Enqueue the web resource in the music player |
 | `music/wp` | `url` | `admin` `busy` `patience` | Play the web resource in the music player |
+| `playlist/delete` | `playlist` | `admin` `patience` | Deletes a playlist from available playlists. An int n input will play the nth playlist |
+| `playlist/lsp` | `playlist` | `admin` `patience` | Plays a playlist from available playlists. An int n input will play the nth playlist |
+| `playlist/save` | `playlist` | `admin` `patience` | Save the current music playlist to the playlist's dir as an m3u |
 
 **GET requests**
 
@@ -179,18 +180,19 @@ The API listens by default on http://127.0.0.1:8139/api if ran via the above doc
 | `ambience/currentplaylist` | | Return the currently playing ambience playlist |
 | `ambience/currenttrack` | | Return the currently playing ambience track |
 | `ambience/history` | | Returns up to 100 of the last played tracks for a player |
+| `ambience/repeat` | `admin` `patience` | Toggle the repeat_mode of the music player |
 | `ambience/skip` | `admin` `busy` `patience` | Skip the current ambience track |
 | `ambience/toggle` | `admin` `patience` | Toggle the playing of the ambience player |
-| `ambience/repeat` | `admin` `patience` | Toggle single-track repeat on ambience player |
 | `clips/now` | `admin` `patience` | Schedule a clip to be played now |
 | `clips/toggle` | `admin` | Toggle the playing of clips |
 | `help` | | Return the available commands and their arguments, if any |
 | `music/currentplaylist` | | Return the currently playing music playlist |
 | `music/currenttrack` | | Return the currently playing music track |
 | `music/history` | | Returns the last music tracks played (max 100) |
+| `music/repeat` | `admin` `patience` | Toggle the repeat_mode of the music player |
 | `music/skip` | `admin` `busy` `patience` | Skip the currently playing music track |
 | `music/toggle` | `admin` `patience` | Toggle the playing of the music player |
-| `music/repeat` | `admin` `patience` | Toggle single-track repeat on music player |
+| `playlist/ls` | | Lists available playlists |
 
 **Flags**
 
