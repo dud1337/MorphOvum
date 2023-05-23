@@ -1,8 +1,3 @@
-######################################################################
-#
-#   IO Function Handler
-#
-#   1. Creates decorators to make function flags:
 #       Make function accessible via API (api)
 #       Admin Only (admin)
 #       Backend busy (busy)
@@ -370,29 +365,75 @@ class InputHandler:
         return self.history_funcs('music')
 
     @api
-    def music_playlists(self):
+    def playlist_ls(self):
         '''Lists available playlists'''
         playlists = sorted(os.listdir(self.audio_players.config_data['playlist_dir']))
-        return self.make_output_data('returned ' + str(len(playlists)) + ' playlists', data=playlists)
+        output_string = f'returned {str(len(playlists))} playlists: '
+        for playlist in playlists:
+            output_string += f'\n{playlists.index(playlist) + 1}: {playlist}'
+        return self.make_output_data(output_string, data=playlists)
 
     @admin
     @api
     @patience
     @patience_flag
-    def music_playlist(self, playlist=''):
+    def playlist_lsp(self, playlist=''):
         '''Plays a playlist from available playlists. An int n input will play the nth playlist'''
         try:
             playlist_number = int(playlist)
-            playlist = sorted(os.listdir(self.audio_players.config_data['playlist_dir']))[playlist_number]
+            playlist = sorted(os.listdir(self.audio_players.config_data['playlist_dir']))[playlist_number - 1]
 
+            path = os.path.join(self.audio_players.config_data['playlist_dir'], playlist)
         except:
             path = os.path.join(self.audio_players.config_data['playlist_dir'], playlist)
 
-            if not os.path.isfile(path):
-                return self.make_output_data('"' + path + '" is not a file', err=True)
-            else:
-                player_backend.modify_media_list(path, self.audio_players.ml_music, self.audio_players.mp_music)
-                return self.make_output_data('ok! music set to: ' + playlist)
+        if not os.path.isfile(path):
+            return self.make_output_data('"' + path + '" is not a file', err=True)
+        else:
+            player_backend.modify_media_list(
+                path,
+                self.audio_players.ml_music,
+                self.audio_players.mp_music,
+                switch_current=True
+            )
+            return self.make_output_data('ok! music set to: ' + playlist)
+
+    @admin
+    @api
+    @patience
+    @patience_flag
+    def playlist_save(self, playlist=''):
+        '''Save the current music playlist to the playlist's dir as an m3u'''
+        ml = self.audio_players.ml_music
+        output_data = []
+        with open(os.path.join(self.audio_players.config_data['playlist_dir'], f'{playlist}.m3u'), 'w+') as f:
+            f.write('#EXTM3U')
+            for media in ml:
+                f.write('\n#EXTINF:,' + media.get_mrl())
+                f.write('\n' + media.get_mrl()[7::])
+            f.write('\n')
+
+        return self.make_output_data(f'{playlist}.m3u created')
+
+    @admin
+    @api
+    @patience
+    @patience_flag
+    def playlist_delete(self, playlist=''):
+        '''Deletes a playlist from available playlists. An int n input will play the nth playlist'''
+        try:
+            playlist_number = int(playlist)
+            playlist = sorted(os.listdir(self.audio_players.config_data['playlist_dir']))[playlist_number - 1]
+
+            path = os.path.join(self.audio_players.config_data['playlist_dir'], playlist)
+        except:
+            path = os.path.join(self.audio_players.config_data['playlist_dir'], playlist)
+
+        if not os.path.isfile(path):
+            return self.make_output_data('"' + path + '" is not a file', err=True)
+        else:
+            os.remove(path)
+            return self.make_output_data(f'ok! deleted playlist: {playlist}')
 
     @admin
     @api
