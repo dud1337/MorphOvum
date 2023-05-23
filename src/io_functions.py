@@ -370,7 +370,7 @@ class InputHandler:
         return self.history_funcs('music')
 
     @api
-    def music_playlists(self, playlist=''):
+    def music_playlists(self):
         '''Lists available playlists'''
         playlists = sorted(os.listdir(self.audio_players.config_data['playlist_dir']))
         return self.make_output_data('returned ' + str(len(playlists)) + ' playlists', data=playlists)
