@@ -11,8 +11,11 @@
   ███   (_)\/|_|| | |   ███  
     ███               ███    
        ███         ███       
-v0.13     █████████  20230520
+v1.0      █████████  20230526
 ```
+
+https://github.com/dud1337/MorphOvum/assets/5631021/1dd0269d-1658-47c0-bee9-66c4977dfbdc
+
 ## Table of Contents
 * [About](#about)
 * [TL;DR: Quickstart Guide](#tldr-quickstart-guide)
@@ -25,6 +28,7 @@ v0.13     █████████  20230520
     * [Python Requirements](#python-requirements)
     * [File Purposes](#file-purposes)
     * [Miscellaneous](#miscellaneous)
+
 
 
 ## About
