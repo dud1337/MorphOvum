@@ -411,7 +411,7 @@ def audio_file_dir_walk(directory, allowed_file_extensions={'mp3', 'wav', 'flac'
     if just_one:
         shuffle(dir_list)
 
-    for file_or_directory in os.listdir(directory):
+    for file_or_directory in dir_list:
         i_path = os.path.join(directory, file_or_directory)
         if os.path.isfile(i_path):
             if re.search(re_exp, file_or_directory, re.IGNORECASE):
