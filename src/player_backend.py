@@ -127,6 +127,7 @@ def check_mrl(mrl, max_time_to_wait=3):
     player.play()
 
     start_time = time()
+    played = False
     while time() - start_time < max_time_to_wait:
         if player.get_state() == vlc.State.Playing:
             sleep(0.5)
