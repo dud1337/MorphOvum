@@ -16,7 +16,7 @@
       <p><a href="./control_panel/">Control Panel</a></p>
       <div id="controls">
           <button id="play_button" class="play button">&#9654;</button>
-          <input type="range" id="volume-control" class="slider" min="0" max="100" value="40" step="10">
+          <input type="range" id="volume-control" class="slider" min="0" max="100" value="60" step="10">
       </div>
       <div id="last_played_songs"></div>
     </div>
@@ -127,7 +127,7 @@
 
   let volume = document.querySelector("#volume-control");
   volume.addEventListener("input", function(e) {
-    audioPlayer.volume = e.currentTarget.value / 100;
+    audioPlayer.volume = (e.currentTarget.value / 100) ** 2;
   });
   
 
