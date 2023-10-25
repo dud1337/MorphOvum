@@ -258,6 +258,7 @@ def load_config(config_file='default-config.yaml'):
             if 'validator' not in validator_conf[key] and not tmp_error:
                 parent_keys.append(key)
                 error |= validate_conf(validator_conf[key], instance_conf[key], parent_keys=parent_keys)
+                parent_keys.pop()
         return error
 
     error = validate_conf(validator_conf, instance_conf)
