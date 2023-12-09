@@ -111,7 +111,9 @@ def check_directory(directory):
         return True
     return False
 
-def check_mrl(mrl, max_time_to_wait=3):
+def check_mrl(mrl, max_time_to_wait=10):
+    # This will check if the MRL is playable
+    # It checks every quarter second if it plays, and if so, returns
     test_instance = vlc.Instance()
     player = test_instance.media_player_new()
     player.audio_set_volume(0)
@@ -130,7 +132,7 @@ def check_mrl(mrl, max_time_to_wait=3):
     played = False
     while time() - start_time < max_time_to_wait:
         if player.get_state() == vlc.State.Playing:
-            sleep(0.5)
+            sleep(0.25)
             played = player.get_state() == vlc.State.Playing
             break
 
