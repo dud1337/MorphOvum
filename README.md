@@ -204,6 +204,18 @@ The API listens by default on http://127.0.0.1:8139/api if ran via the above doc
 
 
 ## Other
+### Local Development / Testing
+For local development or testing without Docker:
+```bash
+# Install dependencies
+pip install -r requirements.txt
+
+# Run with sample media (included in repo)
+cd src
+python main.py -c ../dev-config.yaml
+```
+Then navigate to http://127.0.0.1:8139
+
 ### Sample Media Sources
 1. Ambience
     * [icmusic - Thunderstorm 1](https://freesound.org/people/icmusic/sounds/37564/)
