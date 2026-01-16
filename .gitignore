@@ -1,5 +1,2 @@
 *.pyc
 __pycache__/
-
-# Local development files
-dev-config.yaml

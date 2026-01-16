@@ -1,0 +1,38 @@
+#
+# Development Configuration for Morph Ovum
+# Designed for local UI testing without Docker
+#
+
+# 1. Administration
+admin_password: dev
+
+# 2. Network - localhost only for dev
+interface   : 127.0.0.1
+stream_port : 8138
+io_port     : 8139
+
+# 3. Initial Players - music only for dev
+startup_players:
+  music     : true
+  ambience  : false
+  clips     : false
+
+# 4. Media Directories - point to sample media (included in repo)
+audio_dirs:
+  music     : ./samples/music
+  ambience  : ./samples/ambience
+  clips     : ./samples/clips
+playlist_dir: ./samples/playlists
+
+# 5. Initial Media - use sample media
+default_files:
+  music     : ./samples/music
+  ambience  : ./samples/ambience
+
+# 6. Clip Timing (not used in dev)
+clip_timing:
+  clip_mean           : 90
+  clip_std_deviation  : 15
+
+# 7. UI Settings - ENABLED for dev
+web_ui: true
