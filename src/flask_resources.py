@@ -147,10 +147,9 @@ def bind_flask_resources(flask_api, class_instance):
 def web_ui_adder(api):
     api.add_resource(WebUI_index, '/')
     api.add_resource(WebUI_gif, '/MorphOvum.gif')
-    api.add_resource(WebUI_index_css, '/nice_theme.css')
+    api.add_resource(WebUI_style_css, '/style.css')
     api.add_resource(WebUI_cp_index, '/control_panel/')
     api.add_resource(WebUI_cp_js, '/control_panel/control_panel.js')
-    api.add_resource(WebUI_cp_css, '/control_panel/control_panel.css')
     api.add_resource(WebUI_json, '/control_panel/api_data.json')
     api.add_resource(WebUI_favicon, '/favicon.ico')
 
@@ -168,9 +167,9 @@ class WebUI_gif(Resource):
         response.headers['Content-Type'] = 'image/gif'
         return response
 
-class WebUI_index_css(Resource):
+class WebUI_style_css(Resource):
     def get(self):
-        with open('./www/nice_theme.css') as f:
+        with open('./www/style.css') as f:
             response = make_response(f.read())
         response.headers['Content-Type'] = 'text/css'
         return response
@@ -189,12 +188,6 @@ class WebUI_cp_js(Resource):
         response.headers['Content-Type'] = 'application/javascript'
         return response
 
-class WebUI_cp_css(Resource):
-    def get(self):
-        with open('./www/control_panel.css') as f:
-            response = make_response(f.read())
-        response.headers['Content-Type'] = 'text/css'
-        return response
 
 class WebUI_json(Resource):
     def get(self):
