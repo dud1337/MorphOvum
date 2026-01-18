@@ -1,6 +1,8 @@
 FROM jess/pulseaudio
 
-MAINTAINER dud1337 <grant@dud.li>
+LABEL org.opencontainers.image.source="https://github.com/dud1337/morphovum"
+LABEL org.opencontainers.image.url="https://hub.docker.com/r/dud1337/morphovum"
+LABEL org.opencontainers.image.authors="dud1337"
 
 #            █████            
 #         ███     ███         
@@ -18,10 +20,10 @@ MAINTAINER dud1337 <grant@dud.li>
 #
 
 USER root
-EXPOSE 8138 8139 8140
+EXPOSE 8080
 
-# Install VLC & Pulse Audio
-RUN apt update && apt install -y vlc python3-pip
+# Install VLC, Pulse Audio, nginx, and supervisor
+RUN apt update && apt install -y vlc python3-pip nginx supervisor
 
 # Prepare base directory
 RUN mkdir /fm
@@ -36,6 +38,10 @@ COPY res/MorphOvum.gif /fm/src/www/MorphOvum.gif
 COPY entrypoint.sh /fm/entrypoint.sh
 RUN chmod +x /fm/entrypoint.sh
 
+# Copy nginx and supervisor configurations from src/confs
+COPY src/confs/nginx.conf /etc/nginx/nginx.conf
+COPY src/confs/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+
 # Prepare subdirectories
 RUN mkdir /fm/ambience /fm/clips /fm/music /fm/playlists /fm/conf
 RUN chown pulseaudio:pulseaudio -R /fm \
@@ -44,7 +50,11 @@ RUN chown pulseaudio:pulseaudio -R /fm \
 # Sync time
 RUN date
 
-# Switch user, prepare Pulse Audio virtual sink, set admin pw, and run Morph Ovum
-USER pulseaudio
+# Create log directories for supervisor
+RUN mkdir -p /var/log/supervisor /var/log/nginx
+
+# Set working directory
 WORKDIR "/fm/src"
-ENTRYPOINT /fm/entrypoint.sh
+
+# Use supervisor to manage all services (nginx, pulseaudio, morphovum)
+ENTRYPOINT ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]

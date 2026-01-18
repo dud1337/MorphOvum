@@ -30,6 +30,7 @@ from random import choice, normalvariate, shuffle
 import yaml
 
 import websockets
+from websockets.protocol import State
 import vlc
 #   "media list player is a layer of inconvenience that you're better off not using"
 #               - anon, #VideoLAN:matrix.org #videolan at freenode or irc.videolan.org
@@ -404,7 +405,7 @@ def audio_file_dir_walk(directory, allowed_file_extensions={'mp3', 'wav', 'flac'
     audio files and creates a list of file locations'''
     # VLC doesn't auto-expand directories with Media instances.
     # Outputs list of files
-    re_exp = '(?:\.'
+    re_exp = r'(?:\.'
     for ext in allowed_file_extensions:
         re_exp += ext + '|'
     re_exp = re_exp[:-1:]
@@ -443,9 +444,8 @@ class NotificationWebsocketsServer:
     ambience_paused = False
 
     def __init__(self):
-        new_loop = asyncio.new_event_loop()
-        start_server = websockets.serve(self.handler, '0.0.0.0', 8140, loop=new_loop)
-        t = Thread(target=self.start_loop, args=(new_loop, start_server))
+        t = Thread(target=self.start_loop)
+        t.daemon = True
         t.start()
 
     async def register(self, websocket):
@@ -454,11 +454,11 @@ class NotificationWebsocketsServer:
     async def unregister(self, websocket):
         self.users.remove(websocket)
 
-    async def handler(self, websocket, path):
+    async def handler(self, websocket):
         await self.register(websocket)
         await websocket.send('welcome')
         try:
-            while not websocket.closed:
+            while websocket.state == State.OPEN:
                 await asyncio.sleep(1)
                 if self.music_change:
                     self.music_change = False
@@ -476,9 +476,17 @@ class NotificationWebsocketsServer:
             await websocket.close()
             await self.unregister(websocket)
 
-    def start_loop(self, loop, server):
-        loop.run_until_complete(server)
-        loop.run_forever()
+    def start_loop(self):
+        async def run_server():
+            async with websockets.serve(self.handler, '0.0.0.0', 8140):
+                await asyncio.Future()  # run forever
+        
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+        try:
+            loop.run_until_complete(run_server())
+        finally:
+            loop.close()
 
     async def change_notify(self, music_or_ambience, change_type):
         if self.users:
@@ -543,6 +551,79 @@ class AudioPlayers:
         self.em_music.event_attach(vlc.EventType.MediaPlayerMediaChanged, media_changed_event, self, 'music')
         self.em_ambience.event_attach(vlc.EventType.MediaPlayerMediaChanged, media_changed_event, self, 'ambience')
 
+        def cleanup_broken_files(self, music_or_ambience):
+            '''Remove broken/missing files from playlist and restart playback.
+            Called when a player gets stuck on a deleted or corrupted file.'''
+            mp = getattr(self, 'mp_' + music_or_ambience)
+            ml = getattr(self, 'ml_' + music_or_ambience)
+            
+            try:
+                if Debug:
+                    eprint(f'Cleaning up broken files from {music_or_ambience} playlist (count: {ml.count()})')
+                
+                # Find all valid files in the current playlist
+                valid_files = []
+                broken_count = 0
+                for i in range(ml.count()):
+                    item = ml.item_at_index(i)
+                    item_path = item.get_mrl().replace('file://', '')
+                    if os.path.exists(item_path):
+                        valid_files.append(item_path)
+                    else:
+                        broken_count += 1
+                        if Debug:
+                            eprint(f'  Removing broken file: {os.path.basename(item_path)}')
+                
+                if broken_count == 0:
+                    if Debug:
+                        eprint(f'  No broken files found, attempting next() anyway')
+                    mp.next()
+                    return
+                
+                if len(valid_files) == 0:
+                    if Debug:
+                        eprint(f'  All files in {music_or_ambience} playlist are broken!')
+                    return
+                
+                # Rebuild playlist with only valid files
+                new_list = self.i.media_list_new()
+                for file_path in valid_files:
+                    new_media = self.i.media_new(file_path)
+                    new_list.add_media(new_media)
+                
+                if Debug:
+                    eprint(f'  Rebuilt playlist with {new_list.count()} valid files (removed {broken_count})')
+                
+                # Stop, swap playlist, restart
+                try:
+                    mp.stop()
+                    sleep(0.2)
+                except:
+                    pass
+                
+                mp.set_media_list(new_list)
+                
+                # Restore volume
+                volume = mp.get_media_player().audio_get_volume()
+                mp.get_media_player().audio_set_volume(volume if volume > 0 else 100)
+                
+                # Update our reference
+                if music_or_ambience == 'music':
+                    self.ml_music = new_list
+                else:
+                    self.ml_ambience = new_list
+                
+                # Restart playback
+                mp.play()
+                sleep(0.3)
+                
+                if Debug:
+                    eprint(f'  Playback restarted for {music_or_ambience}')
+                    
+            except Exception as e:
+                if Debug:
+                    eprint(f'  Error during cleanup: {e}')
+
         def media_paused_event(event, self, music_or_ambience):
             '''Callback function for event managers to notify websockets clients of track pauses'''
             # set notification server thread to notify
@@ -551,6 +632,40 @@ class AudioPlayers:
 
         self.em_music.event_attach(vlc.EventType.MediaPlayerStopped, media_paused_event, self, 'music')
         self.em_ambience.event_attach(vlc.EventType.MediaPlayerStopped, media_paused_event, self, 'ambience')
+
+        def media_error_event(event, self, music_or_ambience):
+            '''Callback function for media errors - spawn recovery thread.
+            Don't block the callback by doing recovery directly here.'''
+            mp = getattr(self, 'mp_' + music_or_ambience)
+            state = mp.get_media_player().get_state()
+            
+            if state in [vlc.State.Error, vlc.State.Stopped, vlc.State.NothingSpecial]:
+                if Debug:
+                    eprint(f'Media error in {music_or_ambience} (state: {state}), spawning recovery thread')
+                # Spawn a thread to handle recovery without blocking callback
+                recovery_thread = Thread(target=cleanup_broken_files, args=(self, music_or_ambience))
+                recovery_thread.daemon = True
+                recovery_thread.start()
+            elif Debug:
+                eprint(f'Media error in {music_or_ambience} but player already playing (state: {state})')
+
+        def media_end_reached_event(event, self, music_or_ambience):
+            '''Callback function when media ends - spawn recovery thread if stuck.'''
+            mp = getattr(self, 'mp_' + music_or_ambience)
+            state = mp.get_media_player().get_state()
+            
+            if state in [vlc.State.Stopped, vlc.State.Error, vlc.State.NothingSpecial]:
+                if Debug:
+                    eprint(f'Media ended but {music_or_ambience} stuck (state: {state}), spawning recovery thread')
+                # Spawn a thread to handle recovery without blocking callback
+                recovery_thread = Thread(target=cleanup_broken_files, args=(self, music_or_ambience))
+                recovery_thread.daemon = True
+                recovery_thread.start()
+
+        self.em_music.event_attach(vlc.EventType.MediaPlayerEncounteredError, media_error_event, self, 'music')
+        self.em_ambience.event_attach(vlc.EventType.MediaPlayerEncounteredError, media_error_event, self, 'ambience')
+        self.em_music.event_attach(vlc.EventType.MediaPlayerEndReached, media_end_reached_event, self, 'music')
+        self.em_ambience.event_attach(vlc.EventType.MediaPlayerEndReached, media_end_reached_event, self, 'ambience')
 
         # 4. Clips need a special Thread
         self.clips_thread = Clips(self)
