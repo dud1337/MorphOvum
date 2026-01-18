@@ -157,7 +157,7 @@
   function drawSpectrum() {
     if (!analyser || !playing) {
       // Draw idle state with dim bars
-      canvasCtx.fillStyle = '#1a1410'
+      canvasCtx.fillStyle = '#1a1b1e'
       canvasCtx.fillRect(0, 0, canvas.width, canvas.height)
       
       const barCount = 64
@@ -171,10 +171,10 @@
         const barHeight = 8
         const y = canvas.height - barHeight
         
-        // Dim gold bars for idle state
+        // Dim light gray bars for idle state
         const gradient = canvasCtx.createLinearGradient(0, y, 0, canvas.height)
-        gradient.addColorStop(0, 'rgba(139, 105, 20, 0.3)')
-        gradient.addColorStop(1, 'rgba(212, 175, 55, 0.3)')
+        gradient.addColorStop(0, 'rgba(139, 157, 195, 0.3)')
+        gradient.addColorStop(1, 'rgba(184, 197, 214, 0.3)')
         canvasCtx.fillStyle = gradient
         canvasCtx.fillRect(x, y, barWidth, barHeight)
       }
@@ -187,7 +187,7 @@
     
     animationId = requestAnimationFrame(drawSpectrum)
     
-    canvasCtx.fillStyle = '#1a1410'
+    canvasCtx.fillStyle = '#1a1b1e'
     canvasCtx.fillRect(0, 0, canvas.width, canvas.height)
     
     const values = getFrequencyData()
@@ -204,31 +204,30 @@
       const x = i * (barWidth + gap)
       const y = canvas.height - barHeight
       
-      // Create smooth gradient based on intensity (no harsh cutoffs)
+      // Create smooth gradient for light bars
       const gradient = canvasCtx.createLinearGradient(0, y, 0, canvas.height)
       const intensity = barHeight / (canvas.height * 0.9)
       
-      // Smooth color interpolation based on intensity
-      // All bars use the same gradient structure for consistency
-      const topBrightness = 0.3 + (intensity * 0.7) // 30% to 100% brightness at top
-      const bottomBrightness = 0.5 + (intensity * 0.5) // 50% to 100% brightness at bottom
+      // Light gray gradient - softer, more subdued
+      const topBrightness = 0.35 + (intensity * 0.55) // 35% to 90% brightness at top
+      const bottomBrightness = 0.45 + (intensity * 0.45) // 45% to 90% brightness at bottom
       
-      // Calculate RGB values for smooth golden gradient
-      const topR = Math.floor(139 + (105 * topBrightness))
-      const topG = Math.floor(105 + (90 * topBrightness))
-      const topB = Math.floor(20 + (39 * topBrightness))
+      // Calculate RGB values for smooth light gray gradient
+      const topR = Math.floor(107 + (108 * topBrightness))
+      const topG = Math.floor(122 + (93 * topBrightness))
+      const topB = Math.floor(146 + (69 * topBrightness))
       
-      const midR = Math.floor(212 * bottomBrightness)
-      const midG = Math.floor(175 * bottomBrightness)
-      const midB = Math.floor(55 * bottomBrightness)
+      const midR = Math.floor(139 + (76 * bottomBrightness))
+      const midG = Math.floor(157 + (58 * bottomBrightness))
+      const midB = Math.floor(195 + (20 * bottomBrightness))
       
-      const bottomR = Math.floor(212 + (18 * intensity))
-      const bottomG = Math.floor(175 + (15 * intensity))
-      const bottomB = Math.floor(55 + (16 * intensity))
+      const bottomR = Math.floor(175 + (40 * intensity))
+      const bottomG = Math.floor(190 + (25 * intensity))
+      const bottomB = Math.floor(215 + (10 * intensity))
       
-      gradient.addColorStop(0, `rgb(${topR}, ${topG}, ${topB})`)
-      gradient.addColorStop(0.5, `rgb(${midR}, ${midG}, ${midB})`)
-      gradient.addColorStop(1, `rgb(${bottomR}, ${bottomG}, ${bottomB})`)
+      gradient.addColorStop(0, `rgba(${topR}, ${topG}, ${topB}, 0.9)`)
+      gradient.addColorStop(0.5, `rgba(${midR}, ${midG}, ${midB}, 0.92)`)
+      gradient.addColorStop(1, `rgba(${bottomR}, ${bottomG}, ${bottomB}, 0.95)`)
       
       canvasCtx.fillStyle = gradient
       canvasCtx.fillRect(x, y, barWidth, barHeight)
@@ -236,22 +235,22 @@
       // Add subtle glow for high intensity
       if (intensity > 0.65) {
         canvasCtx.shadowBlur = 8 + (intensity * 6)
-        canvasCtx.shadowColor = `rgba(212, 175, 55, ${0.4 + intensity * 0.4})`
+        canvasCtx.shadowColor = `rgba(184, 197, 214, ${0.4 + intensity * 0.4})`
         canvasCtx.fillRect(x, y, barWidth, barHeight)
         canvasCtx.shadowBlur = 0
       }
       
-      // Draw peak hold indicator
+      // Draw peak hold indicator in lime green
       if (peakValues[i] > 0) {
         const peakHeight = Math.min((peakValues[i] / 255) * canvas.height * 0.9, canvas.height * 0.95)
         const peakY = canvas.height - peakHeight
         
-        canvasCtx.fillStyle = '#f4d766'
+        canvasCtx.fillStyle = '#a0ff50'
         canvasCtx.fillRect(x, peakY - 2, barWidth, 3)
         
         // Glow on peak
         canvasCtx.shadowBlur = 6
-        canvasCtx.shadowColor = 'rgba(244, 215, 102, 0.8)'
+        canvasCtx.shadowColor = 'rgba(160, 255, 80, 0.8)'
         canvasCtx.fillRect(x, peakY - 2, barWidth, 3)
         canvasCtx.shadowBlur = 0
       }
