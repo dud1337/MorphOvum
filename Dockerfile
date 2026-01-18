@@ -1,6 +1,6 @@
 FROM jess/pulseaudio
 
-MAINTAINER dud1337 <grant@dud.li>
+LABEL maintainer="dud1337 <grant@dud.li>"
 
 #            █████            
 #         ███     ███         
@@ -18,10 +18,10 @@ MAINTAINER dud1337 <grant@dud.li>
 #
 
 USER root
-EXPOSE 8138 8139 8140
+EXPOSE 8080
 
-# Install VLC & Pulse Audio
-RUN apt update && apt install -y vlc python3-pip
+# Install VLC, Pulse Audio, nginx, and supervisor
+RUN apt update && apt install -y vlc python3-pip nginx supervisor
 
 # Prepare base directory
 RUN mkdir /fm
@@ -34,6 +34,10 @@ RUN python3 -m pip install -r /fm/requirements.txt --break-system-packages
 ADD src /fm/src
 COPY res/MorphOvum.gif /fm/src/www/MorphOvum.gif
 
+# Copy nginx and supervisor configurations from src/confs
+COPY src/confs/nginx.conf /etc/nginx/nginx.conf
+COPY src/confs/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+
 # Prepare subdirectories
 RUN mkdir /fm/ambience /fm/clips /fm/music /fm/playlists /fm/conf
 RUN chown pulseaudio:pulseaudio -R /fm \
@@ -42,11 +46,11 @@ RUN chown pulseaudio:pulseaudio -R /fm \
 # Sync time
 RUN date
 
-# Switch user, prepare Pulse Audio virtual sink, set admin pw, and run Morph Ovum
-USER pulseaudio
+# Create log directories for supervisor
+RUN mkdir -p /var/log/supervisor /var/log/nginx
+
+# Set working directory
 WORKDIR "/fm/src"
-ENTRYPOINT pulseaudio -D \
-	&& pacmd load-module module-null-sink sink_name=virtual sink_properties=device.description=virtual \
-	&& pacmd set-default-sink virtual \
-	&& sed -i -r "s/changeme/$MORPH_OVUM_PASSWORD/g" /fm/src/default-config.yaml \
-	&& python3 main.py -c /fm/conf/config.yaml
+
+# Use supervisor to manage all services (nginx, pulseaudio, morphovum)
+ENTRYPOINT ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]

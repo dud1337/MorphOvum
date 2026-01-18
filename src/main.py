@@ -21,7 +21,7 @@ from string import ascii_uppercase, digits
 from random import choice
 from optparse import OptionParser
 
-ascii_splash = '''
+ascii_splash = r'''
             █████
          ███     ███
        ███         ███

@@ -15,12 +15,16 @@
       <p>a free and open source community radio service</p>
       <p><a href="./control_panel/">Control Panel</a></p>
       <div id="controls">
-          <button id="play_button" class="play button">&#9654;</button>
-          <input type="range" id="volume-control" class="slider" min="0" max="100" value="40" step="10">
+          <button id="play_button" class="play button" aria-label="Play/Pause">&#9654;</button>
+          <div id="volume-container">
+            <span id="volume-icon" aria-hidden="true">🔊</span>
+            <input type="range" id="volume-control" class="slider" min="0" max="100" value="40" step="5" aria-label="Volume control">
+            <span id="volume-percentage">40%</span>
+          </div>
       </div>
       <div id="last_played_songs"></div>
     </div>
-    <div class="player".>
+    <div class="player">
         <span class="disableselect">Song </span><br>
       <div class="current-track">
         <span class="current-track__text"></span>
@@ -40,11 +44,21 @@
     </div>
   </div>
 </div>
+<div id="copy-toast">Copied to clipboard!</div>
 <script>
   const playButton = document.querySelector('.play.button')
   const audioPlayer = new Audio()
-  audioPlayer.volume = 0.40;
-  document.getElementById('volume-control').value=40;
+  const volumeControl = document.getElementById('volume-control')
+  const volumeIcon = document.getElementById('volume-icon')
+  const volumePercentage = document.getElementById('volume-percentage')
+  const copyToast = document.getElementById('copy-toast')
+  
+  // Load saved volume from localStorage or use default
+  const savedVolume = localStorage.getItem('morphovum_volume')
+  const initialVolume = savedVolume ? parseInt(savedVolume) : 40
+  audioPlayer.volume = (initialVolume / 100) ** 2  // Quadratic curve for more natural volume feel
+  volumeControl.value = initialVolume
+  updateVolumeDisplay(initialVolume)
 
   function connectWebSocket() {
       var loc = window.location, new_uri;
@@ -82,6 +96,42 @@
   connectWebSocket(); 
 
   const audio_resource = './listen.mp3'
+  
+  // Keyboard shortcuts
+  document.addEventListener('keydown', function(e) {
+    // Ignore if typing in an input field
+    if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
+      return
+    }
+    
+    switch(e.key) {
+      case ' ': // Space - play/pause
+        e.preventDefault()
+        playButton.click()
+        break
+      case 'ArrowUp': // Arrow Up - volume up
+        e.preventDefault()
+        const newVolumeUp = Math.min(100, parseInt(volumeControl.value) + 5)
+        volumeControl.value = newVolumeUp
+        audioPlayer.volume = (newVolumeUp / 100) ** 2  // Quadratic curve for more natural volume feel
+        updateVolumeDisplay(newVolumeUp)
+        localStorage.setItem('morphovum_volume', newVolumeUp)
+        break
+      case 'ArrowDown': // Arrow Down - volume down
+        e.preventDefault()
+        const newVolumeDown = Math.max(0, parseInt(volumeControl.value) - 5)
+        volumeControl.value = newVolumeDown
+        audioPlayer.volume = (newVolumeDown / 100) ** 2  // Quadratic curve for more natural volume feel
+        updateVolumeDisplay(newVolumeDown)
+        localStorage.setItem('morphovum_volume', newVolumeDown)
+        break
+      case 'm':
+      case 'M': // M - mute/unmute
+        e.preventDefault()
+        volumeIcon.click()
+        break
+    }
+  })
 
   let playing = false
 
@@ -105,10 +155,14 @@
     fetch('./api/music/currenttrack')
       .then(response => response.json())
       .then(json => {
+        const currentTrackEl = document.querySelector('.current-track')
+        const currentTrackText = document.querySelector('.current-track__text')
         if (json.data.is_playing) {
-          document.querySelector('.current-track__text').textContent = json.msg;
+          currentTrackText.textContent = json.msg
+          currentTrackEl.title = 'Click to copy: ' + json.msg
         } else {
-          document.querySelector('.current-track__text').textContent = "Music paused";
+          currentTrackText.textContent = "Music paused"
+          currentTrackEl.title = ''
         }
       })
   }
@@ -117,19 +171,109 @@
     fetch('./api/ambience/currenttrack')
       .then(response => response.json())
       .then(json => {
+        const currentAmbienceEl = document.querySelector('.current-ambience')
+        const currentAmbienceText = document.querySelector('.current-ambience__text')
 	if (json.data.is_playing) {
-          document.querySelector('.current-ambience__text').textContent = json.msg;
+          currentAmbienceText.textContent = json.msg
+          currentAmbienceEl.title = 'Click to copy: ' + json.msg
         } else {
-          document.querySelector('.current-ambience__text').textContent = "Ambience paused";
+          currentAmbienceText.textContent = "Ambience paused"
+          currentAmbienceEl.title = ''
         }
       })
   }
-
-  let volume = document.querySelector("#volume-control");
-  volume.addEventListener("input", function(e) {
-    audioPlayer.volume = e.currentTarget.value / 100;
-  });
   
+  // Add click handlers for current track and ambience
+  document.querySelector('.current-track').addEventListener('click', function() {
+    const text = document.querySelector('.current-track__text').textContent
+    if (text && text !== 'Music paused') {
+      copyToClipboard(text, this)
+    }
+  })
+  
+  document.querySelector('.current-ambience').addEventListener('click', function() {
+    const text = document.querySelector('.current-ambience__text').textContent
+    if (text && text !== 'Ambience paused') {
+      copyToClipboard(text, this)
+    }
+  })
+
+  // Update volume icon based on level
+  function updateVolumeDisplay(value) {
+    const volume = parseInt(value)
+    volumePercentage.textContent = volume + '%'
+    
+    // Update icon based on volume level
+    if (volume === 0) {
+      volumeIcon.textContent = '🔇'
+    } else if (volume < 33) {
+      volumeIcon.textContent = '🔉'
+    } else if (volume < 66) {
+      volumeIcon.textContent = '🔊'
+    } else {
+      volumeIcon.textContent = '🔊'
+    }
+    
+    // Update slider background using CSS variable (works in Firefox)
+    const percentage = volume
+    volumeControl.style.setProperty('--volume-percentage', percentage + '%')
+  }
+  
+  // Volume control handler with Firefox delay fix
+  function handleVolumeChange(e) {
+    // Use setTimeout to ensure Firefox has updated the value
+    setTimeout(() => {
+      const value = volumeControl.value
+      audioPlayer.volume = (value / 100) ** 2  // Quadratic curve for more natural volume feel
+      updateVolumeDisplay(value)
+      localStorage.setItem('morphovum_volume', value)
+    }, 0)
+  }
+  
+  volumeControl.addEventListener("input", handleVolumeChange)
+  volumeControl.addEventListener("change", handleVolumeChange)
+  volumeControl.addEventListener("click", handleVolumeChange)
+  
+  // Click volume icon to mute/unmute
+  volumeIcon.addEventListener('click', function() {
+    if (audioPlayer.volume > 0) {
+      volumeIcon.dataset.previousVolume = volumeControl.value
+      volumeControl.value = 0
+      audioPlayer.volume = 0
+      updateVolumeDisplay(0)
+      localStorage.setItem('morphovum_volume', '0')
+    } else {
+      const previousVolume = volumeIcon.dataset.previousVolume || '40'
+      volumeControl.value = previousVolume
+      audioPlayer.volume = (previousVolume / 100) ** 2  // Quadratic curve for more natural volume feel
+      updateVolumeDisplay(previousVolume)
+      localStorage.setItem('morphovum_volume', previousVolume)
+    }
+  })
+  
+
+  // Show toast notification
+  function showToast(message) {
+    copyToast.textContent = message
+    copyToast.classList.add('show')
+    setTimeout(() => {
+      copyToast.classList.remove('show')
+    }, 2000)
+  }
+  
+  // Copy text to clipboard
+  function copyToClipboard(text, element) {
+    navigator.clipboard.writeText(text).then(() => {
+      showToast('Copied to clipboard!')
+      element.classList.add('copied')
+      setTimeout(() => {
+        element.classList.remove('copied')
+      }, 500)
+    }).catch(err => {
+      console.error('Failed to copy:', err)
+      showToast('Failed to copy')
+    })
+  }
 
   function buildPlaylist() {
     fetch('./api/music/history')
@@ -139,6 +283,13 @@
           const li = document.createElement('li')
           li.className = 'track-list__track'
           li.innerText = track
+          li.title = 'Click to copy'
+          
+          // Click to copy functionality
+          li.addEventListener('click', function() {
+            copyToClipboard(track, li)
+          })
+          
           return li
         })
         const trackList = document.querySelector('.track-list')

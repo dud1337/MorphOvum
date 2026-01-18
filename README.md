@@ -56,9 +56,7 @@ services:
         stdin_open: true
         tty: true
         ports:
-            - '8138:8138'
-            - '8139:8139'
-            - '8140:8140'
+            - '8080:8080'
 #       volumes:
 #           - /path/to/your/music:/fm/music
 #           - /path/to/your/ambience:/fm/ambience
@@ -73,36 +71,38 @@ services:
 ```
 docker-compose up
 ```
-2. To listen play `http://127.0.0.1:8138` in your preferred media player
+2. To listen play `http://127.0.0.1:8080/listen.mp3` in your preferred media player
 ```
-mpv http://127.0.0.1:8138
+mpv http://127.0.0.1:8080/listen.mp3
 ```
 3. To check the current music track
 ```
-curl http://127.0.0.1:8139/api/music/current/track
+curl http://127.0.0.1:8080/api/music/current/track
 {"msg": "ok!", "data": "Krangu - Scratchy Funk"}
 ```
 4. To check the current ambience playlist
 ```
-curl http://127.0.0.1:8139/api/ambience/current/playlist
+curl http://127.0.0.1:8080/api/ambience/current/playlist
 {"msg": "ok!", "data": ["ambience/icmusic__thunderstorm_short.mp3", "ambience/lurpsis__lit_fireplace.mp3"]}
 ```
 5. To log in as admin with the default password
 ```
 printf 'changeme' | sha256sum
 057ba03d6c44104863dc7361fe4578965d1887360f90a0895882e58a6248fc86  -
-curl http://127.0.0.1/admin
+curl http://127.0.0.1:8080/admin
 {"msg": "you are not admin", "data": false}
-curl -c /tmp/morphovum_cookie_test -d "password_hash=057ba03d6c44104863dc7361fe4578965d1887360f90a0895882e58a6248fc86" http://127.0.0.1:8139/api/admin
+curl -c /tmp/morphovum_cookie_test -d "password_hash=057ba03d6c44104863dc7361fe4578965d1887360f90a0895882e58a6248fc86" http://127.0.0.1:8080/api/admin
 {"msg": "ok!"}
-curl -b /tmp/morphovum_cookie_test http://127.0.0.1:8139/api/admin
+curl -b /tmp/morphovum_cookie_test http://127.0.0.1:8080/api/admin
 {"msg": "ok! you are admin", "data": true}
 ```
 6. To immediately play a YouTube link
 ```
-curl -b /tmp/cookie http://127.0.0.1:8139/api/music/wp/ -d "url=https://www.youtube.com/watch%3fv=rquygdjf0d8"
+curl -b /tmp/cookie http://127.0.0.1:8080/api/music/wp/ -d "url=https://www.youtube.com/watch%3fv=rquygdjf0d8"
 {"msg": "ok! music playing https://www.youtube.com/watch?v=rquygdjf0d8"}
 ```
+
+**Note:** All services are now consolidated behind nginx on port 8080. See [NGINX_ARCHITECTURE.md](NGINX_ARCHITECTURE.md) for details.
 
 
 ## Admin Functionality
@@ -150,7 +150,7 @@ playlist_dir: /path/to/your/playlists
 
 
 ## API Documentation
-The API listens by default on http://127.0.0.1:8139/api if ran via the above docker commands.
+The API listens by default on http://127.0.0.1:8080/api if ran via the above docker commands (nginx routes `/api/*` requests to the internal Flask server on port 8139).
 
 **POST requests**
 
@@ -216,6 +216,8 @@ python main.py -c ../dev-config.yaml
 ```
 Then navigate to http://127.0.0.1:8139
 
+**Note:** When running locally without Docker, the services run on their internal ports (8138 for stream, 8139 for UI/API, 8140 for websockets). The single-port nginx setup only applies to the Docker container.
+
 ### Sample Media Sources
 1. Ambience
     * [icmusic - Thunderstorm 1](https://freesound.org/people/icmusic/sounds/37564/)
@@ -247,9 +249,11 @@ websockets
 ### File Purposes
 | File | Purpose |
 | ------ | ------ |
-| `Dockerfile` | Prepares morph ovum container |
+| `Dockerfile` | Prepares morph ovum container with nginx and supervisor |
 | `docker-compose.yaml` | Morph Ovum container instance configuration |
 | `requirements.txt` | Required python modules to pip install |
+| `/src/confs/nginx.conf` | Nginx reverse proxy configuration (consolidates 3 ports to 1) |
+| `/src/confs/supervisord.conf` | Supervisor configuration to manage nginx, pulseaudio, and morphovum |
 | `src/default-config.yaml` | Default player instance configuration file |
 | `src/main.py` | File to run to start Morph Ovum |
 | `src/io_functions.py` | Handles user input |
