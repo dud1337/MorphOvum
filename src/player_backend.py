@@ -112,7 +112,9 @@ def check_directory(directory):
         return True
     return False
 
-def check_mrl(mrl, max_time_to_wait=3):
+def check_mrl(mrl, max_time_to_wait=10):
+    # This will check if the MRL is playable
+    # It checks every quarter second if it plays, and if so, returns
     test_instance = vlc.Instance()
     player = test_instance.media_player_new()
     player.audio_set_volume(0)
@@ -128,9 +130,10 @@ def check_mrl(mrl, max_time_to_wait=3):
     player.play()
 
     start_time = time()
+    played = False
     while time() - start_time < max_time_to_wait:
         if player.get_state() == vlc.State.Playing:
-            sleep(0.5)
+            sleep(0.25)
             played = player.get_state() == vlc.State.Playing
             break
 
@@ -258,6 +261,7 @@ def load_config(config_file='default-config.yaml'):
             if 'validator' not in validator_conf[key] and not tmp_error:
                 parent_keys.append(key)
                 error |= validate_conf(validator_conf[key], instance_conf[key], parent_keys=parent_keys)
+                parent_keys.pop()
         return error
 
     error = validate_conf(validator_conf, instance_conf)
@@ -412,7 +416,7 @@ def audio_file_dir_walk(directory, allowed_file_extensions={'mp3', 'wav', 'flac'
     if just_one:
         shuffle(dir_list)
 
-    for file_or_directory in os.listdir(directory):
+    for file_or_directory in dir_list:
         i_path = os.path.join(directory, file_or_directory)
         if os.path.isfile(i_path):
             if re.search(re_exp, file_or_directory, re.IGNORECASE):

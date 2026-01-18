@@ -13,6 +13,9 @@
        ███         ███       
 v1.2     █████████  20260118
 ```
+
+https://github.com/dud1337/MorphOvum/assets/5631021/1dd0269d-1658-47c0-bee9-66c4977dfbdc
+
 ## Table of Contents
 * [About](#about)
 * [TL;DR: Quickstart Guide](#tldr-quickstart-guide)
@@ -25,6 +28,7 @@ v1.2     █████████  20260118
     * [Python Requirements](#python-requirements)
     * [File Purposes](#file-purposes)
     * [Miscellaneous](#miscellaneous)
+
 
 
 ## About

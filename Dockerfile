@@ -35,6 +35,8 @@ RUN python3 -m pip install -r /fm/requirements.txt --break-system-packages
 # Provide morphovum source code
 ADD src /fm/src
 COPY res/MorphOvum.gif /fm/src/www/MorphOvum.gif
+COPY entrypoint.sh /fm/entrypoint.sh
+RUN chmod +x /fm/entrypoint.sh
 
 # Copy nginx and supervisor configurations from src/confs
 COPY src/confs/nginx.conf /etc/nginx/nginx.conf
@@ -43,7 +45,7 @@ COPY src/confs/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 # Prepare subdirectories
 RUN mkdir /fm/ambience /fm/clips /fm/music /fm/playlists /fm/conf
 RUN chown pulseaudio:pulseaudio -R /fm \
-	&& chmod 775 -R /fm
+    && chmod 775 -R /fm
 
 # Sync time
 RUN date

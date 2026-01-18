@@ -78,7 +78,7 @@ playlist_dir: /fm/playlists
 #     ambience  : fm/ambience
 #
 default_files:
-  music     : /fm/music
+  music     : /fm/music # https://www.youtube.com/watch?v=jT-qjyJKtzU commented until VLC fixes YT playing
   ambience  : /fm/ambience
 
 # 6. Clip Timing.
