@@ -1,7 +1,7 @@
 #
 # Development Configuration for Morph Ovum
 # Designed for local UI testing without Docker
-#
+# Better to test with docker where possible
 
 # 1. Administration
 admin_password: devpassword

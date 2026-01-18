@@ -1,23 +1,183 @@
+html, body {
+	margin: 0;
+	padding: 0;
+	background-color: #000000;
+	color: rgb(98, 88, 68);
+	font-family: monospace;
+}
+
+body {
+	background-image: linear-gradient(100deg, rgb(21, 19, 15), 15%, rgb(32, 29, 22), 85%, rgb(21, 19, 15));
+	min-height: 100vh;
+	padding: 40px 20px;
+}
+
+.back-button-container {
+	max-width: 1400px;
+	margin: 0 auto 20px auto;
+}
+
+.back-button {
+	display: inline-block;
+	padding: 10px 20px;
+	background-color: rgb(40, 36, 28);
+	border: 2px solid rgb(73, 65, 51);
+	border-radius: 6px;
+	color: rgb(140, 125, 98);
+	text-decoration: none;
+	font-family: monospace;
+	font-size: 0.95em;
+	font-weight: bold;
+	transition: all 0.2s;
+}
+
+.back-button:hover {
+	background-color: rgb(50, 45, 35);
+	border-color: rgb(98, 88, 68);
+	color: rgb(180, 160, 125);
+}
+
+h1 {
+	color: rgb(98, 88, 68);
+	font-size: 2.5em;
+	margin-bottom: 10px;
+	text-align: center;
+}
+
+p {
+	color: rgb(98, 88, 68);
+	text-align: center;
+	margin-bottom: 40px;
+	font-size: 1.1em;
+}
+
 table {
 	width: 100%;
+	max-width: 1400px;
+	margin: 0 auto;
+	border-collapse: separate;
+	border-spacing: 0 12px;
+}
+
+tr {
+	background-color: rgba(0, 0, 0, 0.6);
+	transition: background-color 0.2s;
+}
+
+tr:hover {
+	background-color: rgba(32, 29, 22, 0.8);
+}
+
+td {
+	padding: 16px 12px;
+	border-top: 1px solid rgb(73, 65, 51);
+	border-bottom: 1px solid rgb(73, 65, 51);
+	vertical-align: middle;
+}
+
+td:first-child {
+	border-left: 1px solid rgb(73, 65, 51);
+	border-top-left-radius: 8px;
+	border-bottom-left-radius: 8px;
+}
+
+td:last-child {
+	border-right: 1px solid rgb(73, 65, 51);
+	border-top-right-radius: 8px;
+	border-bottom-right-radius: 8px;
 }
 
 .td_description {
-  width: calc(50% - 600px);
+	width: auto;
+	min-width: 300px;
+	color: rgb(140, 125, 98);
+	font-size: 0.95em;
 }
 
 .td_arg {
-	width: 200px;
+	width: 250px;
 }
 
 .td_req {
-	width: 100px;
+	width: 120px;
+	text-align: center;
 }
 
 .td_resp {
-	width: 300px;
+	width: 350px;
+	max-width: 350px;
+	word-wrap: break-word;
+	overflow-wrap: break-word;
+	font-size: 0.9em;
 }
 
-h1, p {
-	text-align: center;
+input[type="text"],
+input[type="password"] {
+	width: 100%;
+	padding: 10px 12px;
+	background-color: #000000;
+	border: 2px solid rgb(73, 65, 51);
+	border-style: inset;
+	color: #00ff00;
+	font-family: monospace;
+	font-size: 0.95em;
+	border-radius: 4px;
+	transition: border-color 0.2s;
+}
+
+input[type="text"]:focus,
+input[type="password"]:focus {
+	outline: none;
+	border-color: rgb(98, 88, 68);
+	background-color: rgba(32, 29, 22, 0.5);
+}
+
+button {
+	padding: 10px 24px;
+	background-color: rgb(40, 36, 28);
+	border: 3px solid rgb(51, 45, 35);
+	border-style: outset;
+	color: rgb(140, 125, 98);
+	font-family: monospace;
+	font-size: 0.95em;
+	cursor: pointer;
+	border-radius: 6px;
+	transition: all 0.2s;
+	font-weight: bold;
+	width: 100%;
+}
+
+button:hover {
+	background-color: rgb(50, 45, 35);
+	border-color: rgb(98, 88, 68);
+	color: rgb(180, 160, 125);
+}
+
+button:active {
+	border-style: inset;
+	background-color: rgb(32, 29, 22);
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+	width: 12px;
+	background-color: rgb(11, 10, 8);
+}
+
+::-webkit-scrollbar-thumb {
+	background-color: rgb(24, 21, 16);
+	border-radius: 6px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+	background-color: rgb(38, 34, 26);
+}
+
+* {
+	scrollbar-color: rgb(24, 21, 16) rgb(11, 10, 8);
+}
+
+::selection {
+	background-color: rgb(22, 20, 16);
+	color: rgb(98, 88, 68);
 }

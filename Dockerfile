@@ -1,6 +1,8 @@
 FROM jess/pulseaudio
 
-LABEL maintainer="dud1337 <grant@dud.li>"
+LABEL org.opencontainers.image.source="https://github.com/dud1337/morphovum"
+LABEL org.opencontainers.image.url="https://hub.docker.com/r/dud1337/morphovum"
+LABEL org.opencontainers.image.authors="dud1337"
 
 #            █████            
 #         ███     ███         
