@@ -11,7 +11,7 @@
   ███   (_)\/|_|| | |   ███  
     ███               ███    
        ███         ███       
-v0.13     █████████  20230520
+v1.2     █████████  20260118
 ```
 ## Table of Contents
 * [About](#about)
@@ -71,9 +71,9 @@ services:
 ```
 docker-compose up
 ```
-2. To listen play `http://127.0.0.1:8080/listen.mp3` in your preferred media player
+2. To listen play `http://127.0.0.1:8080` in your preferred media player or browser
 ```
-mpv http://127.0.0.1:8080/listen.mp3
+mpv http://127.0.0.1:8080
 ```
 3. To check the current music track
 ```
