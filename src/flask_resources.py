@@ -147,6 +147,7 @@ def bind_flask_resources(flask_api, class_instance):
 def web_ui_adder(api):
     api.add_resource(WebUI_index, '/')
     api.add_resource(WebUI_gif, '/MorphOvum.gif')
+    api.add_resource(WebUI_og_image, '/morphovum-og.png')
     api.add_resource(WebUI_style_css, '/style.css')
     api.add_resource(WebUI_cp_index, '/control_panel/')
     api.add_resource(WebUI_cp_js, '/control_panel/control_panel.js')
@@ -155,8 +156,15 @@ def web_ui_adder(api):
 
 class WebUI_index(Resource):
     def get(self):
+        from flask import request
         with open('./www/index.html') as f:
-            response = make_response(f.read())
+            html_content = f.read()
+        
+        # Inject absolute URLs for Open Graph metadata (for social media crawlers)
+        base_url = request.url_root.rstrip('/')
+        html_content = html_content.replace('{{BASE_URL}}', base_url)
+        
+        response = make_response(html_content)
         response.headers['Content-Type'] = 'text/html'
         return response
 
@@ -165,6 +173,15 @@ class WebUI_gif(Resource):
         with open('./www/MorphOvum.gif', 'rb') as f:
             response = make_response(f.read())
         response.headers['Content-Type'] = 'image/gif'
+        return response
+
+class WebUI_og_image(Resource):
+    def get(self):
+        with open('./www/morphovum-og.png', 'rb') as f:
+            response = make_response(f.read())
+        response.headers['Content-Type'] = 'image/png'
+        # Add cache control headers for better social media compatibility
+        response.headers['Cache-Control'] = 'public, max-age=31536000'
         return response
 
 class WebUI_style_css(Resource):

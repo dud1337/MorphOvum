@@ -27,6 +27,7 @@ import asyncio
 from threading import Thread
 from time import sleep, time
 from random import choice, normalvariate, shuffle
+from urllib.parse import unquote
 import yaml
 
 import websockets
@@ -308,7 +309,7 @@ def media_get_song(media):
     '''returns as nice a string as possible for the current media'''
     def short_mrl(mrl_string):
         if re.search('^file://', mrl_string):
-            return '/'.join(mrl_string.split('/')[-2::])
+            return unquote('/'.join(mrl_string.split('/')[-2::]))
         else:
             return mrl_string
 
@@ -566,7 +567,9 @@ class AudioPlayers:
                 broken_count = 0
                 for i in range(ml.count()):
                     item = ml.item_at_index(i)
-                    item_path = item.get_mrl().replace('file://', '')
+                    item_mrl = item.get_mrl()
+                    # Properly decode URL-encoded paths (e.g., %20 -> space)
+                    item_path = unquote(item_mrl.replace('file://', ''))
                     if os.path.exists(item_path):
                         valid_files.append(item_path)
                     else:

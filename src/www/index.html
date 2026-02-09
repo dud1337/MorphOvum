@@ -4,6 +4,36 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Morph Ovum</title>
+  
+  <!-- Open Graph / Social Media Metadata -->
+  <meta property="og:title" content="Morph Ovum - FOSS Radio">
+  <meta property="og:description" content="Free and Open Source Software radio streaming platform with live music and ambient soundscapes">
+  <meta property="og:image" content="{{BASE_URL}}/morphovum-og.png">
+  <meta property="og:image:secure_url" content="{{BASE_URL}}/morphovum-og.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:type" content="image/png">
+  <meta property="og:image:alt" content="Morph Ovum - FOSS Radio">
+  <meta property="og:url" content="{{BASE_URL}}">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Morph Ovum">
+  
+  <!-- Twitter Card Metadata -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Morph Ovum - FOSS Radio">
+  <meta name="twitter:description" content="Free and Open Source Software radio streaming platform with live music and ambient soundscapes">
+  <meta name="twitter:image" content="{{BASE_URL}}/morphovum-og.png">
+  <meta name="twitter:image:alt" content="Morph Ovum - FOSS Radio">
+  
+  <!-- General Metadata -->
+  <meta name="description" content="Free and Open Source Software radio streaming platform with live music and ambient soundscapes">
+  <meta name="author" content="Morph Ovum">
+  <meta name="theme-color" content="#1a1b1e">
+  
+  <!-- Favicon -->
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico">
+  
   <link rel="stylesheet" type="text/css" href="./style.css">
 </head>
 <body class="player-page">
@@ -345,7 +375,7 @@
       audioPlayer.load()
       audioPlayer.play()
       playing = true
-      element.innerHTML = '&#x23f8;';
+      element.innerHTML = '<svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><rect x="6" y="4" width="4" height="16" rx="1"/><rect x="14" y="4" width="4" height="16" rx="1"/></svg>';
       element.classList.remove('playing-icon');
       element.classList.add('paused-icon');
       
@@ -377,9 +407,23 @@
         const spectrumSongLabel = document.getElementById('spectrum-song-label')
         
         if (json.data.is_playing) {
-          spectrumSongLabel.textContent = '♫ ' + json.msg
+          // Remove ticker class first to reset animation
+          spectrumSongLabel.classList.remove('ticker')
+          const songText = '♫ ' + json.msg
+          spectrumSongLabel.innerHTML = '<span class="label-text">' + songText + '</span>'
+          spectrumSongLabel.dataset.fullText = json.msg
+          checkAndApplyTicker(spectrumSongLabel)
+          
+          // Update page title and metadata with currently playing track
+          document.title = 'Morph Ovum - ' + json.msg
+          updateMetadata(json.msg)
         } else {
           spectrumSongLabel.textContent = ''
+          spectrumSongLabel.classList.remove('ticker')
+          
+          // Reset page title and metadata when nothing is playing
+          document.title = 'Morph Ovum'
+          updateMetadata(null)
         }
       })
   }
@@ -391,9 +435,15 @@
         const spectrumAmbienceLabel = document.getElementById('spectrum-ambience-label')
         
 	if (json.data.is_playing) {
-          spectrumAmbienceLabel.textContent = '☮ ' + json.msg
+          // Remove ticker class first to reset animation
+          spectrumAmbienceLabel.classList.remove('ticker')
+          const ambienceText = '☮ ' + json.msg
+          spectrumAmbienceLabel.innerHTML = '<span class="label-text">' + ambienceText + '</span>'
+          spectrumAmbienceLabel.dataset.fullText = json.msg
+          checkAndApplyTicker(spectrumAmbienceLabel)
         } else {
           spectrumAmbienceLabel.textContent = ''
+          spectrumAmbienceLabel.classList.remove('ticker')
         }
       })
   }
@@ -435,6 +485,20 @@
   volumeControl.addEventListener("change", handleVolumeChange)
   volumeControl.addEventListener("click", handleVolumeChange)
   
+  // Mouse wheel scroll on volume control
+  const playerLayout = document.querySelector('.player-layout')
+  const handleVolumeWheel = function(e) {
+    e.preventDefault()
+    const currentVolume = parseInt(volumeControl.value)
+    const delta = e.deltaY < 0 ? 5 : -5 // Scroll up increases, scroll down decreases
+    const newVolume = Math.max(0, Math.min(100, currentVolume + delta))
+    volumeControl.value = newVolume
+    audioPlayer.volume = (newVolume / 100) ** 2
+    updateVolumeDisplay(newVolume)
+    localStorage.setItem('morphovum_volume', newVolume)
+  }
+  playerLayout.addEventListener('wheel', handleVolumeWheel)
+  
   // Click volume icon to mute/unmute
   volumeIcon.addEventListener('click', function() {
     if (audioPlayer.volume > 0) {
@@ -452,6 +516,25 @@
     }
   })
   
+
+  // Update Open Graph metadata for social sharing (when track changes)
+  function updateMetadata(trackName) {
+    if (trackName) {
+      const ogTitle = document.querySelector('meta[property="og:title"]')
+      const twitterTitle = document.querySelector('meta[name="twitter:title"]')
+      const newTitle = 'Morph Ovum - ' + trackName
+      
+      if (ogTitle) ogTitle.setAttribute('content', newTitle)
+      if (twitterTitle) twitterTitle.setAttribute('content', newTitle)
+    } else {
+      const ogTitle = document.querySelector('meta[property="og:title"]')
+      const twitterTitle = document.querySelector('meta[name="twitter:title"]')
+      const defaultTitle = 'Morph Ovum - FOSS Radio'
+      
+      if (ogTitle) ogTitle.setAttribute('content', defaultTitle)
+      if (twitterTitle) twitterTitle.setAttribute('content', defaultTitle)
+    }
+  }
 
   // Show toast notification
   function showToast(message) {
@@ -473,6 +556,25 @@
     }).catch(err => {
       console.error('Failed to copy:', err)
       showToast('Failed to copy')
+    })
+  }
+  
+  // Check if text is truncated and apply ticker animation
+  function checkAndApplyTicker(element) {
+    // Wait for next frame to ensure content is rendered
+    requestAnimationFrame(() => {
+      const textSpan = element.querySelector('.label-text')
+      if (!textSpan) return
+      
+      // Check if text width exceeds container width
+      const containerWidth = element.offsetWidth
+      const textWidth = textSpan.scrollWidth
+      
+      if (textWidth > containerWidth) {
+        element.classList.add('ticker')
+      } else {
+        element.classList.remove('ticker')
+      }
     })
   }
 
@@ -522,11 +624,47 @@
     // Draw initial idle spectrum
     drawSpectrum()
     
-    // Handle window resize
+    // Add click-to-copy for spectrum labels
+    const spectrumSongLabel = document.getElementById('spectrum-song-label')
+    const spectrumAmbienceLabel = document.getElementById('spectrum-ambience-label')
+    
+    spectrumSongLabel.addEventListener('click', function() {
+      if (this.dataset.fullText) {
+        copyToClipboard(this.dataset.fullText, this)
+      }
+    })
+    
+    spectrumAmbienceLabel.addEventListener('click', function() {
+      if (this.dataset.fullText) {
+        copyToClipboard(this.dataset.fullText, this)
+      }
+    })
+    
+    // Handle window resize with debouncing to prevent lag
+    let resizeTimeout = null
     window.addEventListener('resize', () => {
-      canvas.width = canvas.offsetWidth || 600
-      canvas.height = canvas.offsetHeight || 120
-      drawSpectrum()
+      // Clear any existing timeout
+      if (resizeTimeout) {
+        clearTimeout(resizeTimeout)
+      }
+      
+      // Debounce: wait 150ms after last resize event before updating
+      resizeTimeout = setTimeout(() => {
+        canvas.width = canvas.offsetWidth || 600
+        canvas.height = canvas.offsetHeight || 120
+        
+        // Only redraw once without starting a new animation loop
+        // The existing loop will continue with the new dimensions
+        if (!playing) {
+          // Only call drawSpectrum if not playing (no loop running)
+          drawSpectrum()
+        }
+        // If playing, the existing requestAnimationFrame loop will pick up new dimensions
+        
+        // Recheck ticker on resize
+        checkAndApplyTicker(spectrumSongLabel)
+        checkAndApplyTicker(spectrumAmbienceLabel)
+      }, 150)
     })
   })()
 </script>
