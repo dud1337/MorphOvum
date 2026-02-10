@@ -11,7 +11,7 @@
   ███   (_)\/|_|| | |   ███  
     ███               ███    
        ███         ███       
-v1.2.3   █████████  20260209
+v1.2.4   █████████  20260210
 ```
 
 https://github.com/dud1337/MorphOvum/assets/5631021/1dd0269d-1658-47c0-bee9-66c4977dfbdc
@@ -106,8 +106,6 @@ curl -b /tmp/cookie http://127.0.0.1:8080/api/music/wp/ -d "url=https://www.yout
 {"msg": "ok! music playing https://www.youtube.com/watch?v=rquygdjf0d8"}
 ```
 
-**Note:** All services are now consolidated behind nginx on port 8080. See [NGINX_ARCHITECTURE.md](NGINX_ARCHITECTURE.md) for details.
-
 
 ## Admin Functionality
 **Docker docker-compose.yaml**
@@ -154,7 +152,7 @@ playlist_dir: /path/to/your/playlists
 
 
 ## API Documentation
-The API listens by default on http://127.0.0.1:8080/api if ran via the above docker commands (nginx routes `/api/*` requests to the internal Flask server on port 8139).
+The API listens by default on http://127.0.0.1:8080/api if ran via the above docker commands.
 
 **POST requests**
 
@@ -220,8 +218,6 @@ python main.py -c ../dev-config.yaml
 ```
 Then navigate to http://127.0.0.1:8139
 
-**Note:** When running locally without Docker, the services run on their internal ports (8138 for stream, 8139 for UI/API, 8140 for websockets). The single-port nginx setup only applies to the Docker container.
-
 ### Sample Media Sources
 1. Ambience
     * [icmusic - Thunderstorm 1](https://freesound.org/people/icmusic/sounds/37564/)
@@ -256,7 +252,7 @@ websockets
 | `Dockerfile` | Prepares morph ovum container with nginx and supervisor |
 | `docker-compose.yaml` | Morph Ovum container instance configuration |
 | `requirements.txt` | Required python modules to pip install |
-| `/src/confs/nginx.conf` | Nginx reverse proxy configuration (consolidates 3 ports to 1) |
+| `/src/confs/nginx.conf` | Nginx reverse proxy configuration |
 | `/src/confs/supervisord.conf` | Supervisor configuration to manage nginx, pulseaudio, and morphovum |
 | `src/default-config.yaml` | Default player instance configuration file |
 | `src/main.py` | File to run to start Morph Ovum |
@@ -264,12 +260,11 @@ websockets
 | `src/player_backend.py` | Defines audio players classes, threads, and their functions |
 | `src/flask_resources.py` | Generate Flask Resources from io functions |
 | `src/www/index.html` | Web UI main file |
-| `src/www/main.js` | Web UI JavaScript |
-| `src/www/main.css` | Web UI CSS |
+| `src/www/js/` | Web UI JavaScript modules |
+| `src/www/style.css` | Web UI CSS |
+| `src/www/control_panel.html` | Control panel UI |
+| `src/www/control_panel.js` | Control panel JavaScript |
 | `src/www/api_data.json` | API metadata |
-| `res/morph_ovum.ascii` | Morph Ovum ASCII art |
-| `res/MorphOvum.gif` | Freeware Morph Ovum gif |
-| `res/morph_ovum.vhosts` | Sample apache2 config |
 | `scripts/doc_generation.py` | Print README.md documentation and create `api_data.json` |
 
 ### Miscellaneous
