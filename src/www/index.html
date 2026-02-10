@@ -4,7 +4,38 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Morph Ovum</title>
+  
+  <!-- Open Graph / Social Media Metadata -->
+  <meta property="og:title" content="Morph Ovum - FOSS Radio">
+  <meta property="og:description" content="Free and Open Source Software radio streaming platform with live music and ambient soundscapes">
+  <meta property="og:image" content="{{BASE_URL}}/morphovum-og.png">
+  <meta property="og:image:secure_url" content="{{BASE_URL}}/morphovum-og.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:type" content="image/png">
+  <meta property="og:image:alt" content="Morph Ovum - FOSS Radio">
+  <meta property="og:url" content="{{BASE_URL}}">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Morph Ovum">
+  
+  <!-- Twitter Card Metadata -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Morph Ovum - FOSS Radio">
+  <meta name="twitter:description" content="Free and Open Source Software radio streaming platform with live music and ambient soundscapes">
+  <meta name="twitter:image" content="{{BASE_URL}}/morphovum-og.png">
+  <meta name="twitter:image:alt" content="Morph Ovum - FOSS Radio">
+  
+  <!-- General Metadata -->
+  <meta name="description" content="Free and Open Source Software radio streaming platform with live music and ambient soundscapes">
+  <meta name="author" content="Morph Ovum">
+  <meta name="theme-color" content="#1a1b1e">
+  
+  <!-- Favicon -->
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico">
+  
   <link rel="stylesheet" type="text/css" href="./style.css">
+  <script type="module" src="./js/main.js"></script>
 </head>
 <body class="player-page">
 
@@ -36,6 +67,11 @@
               <span id="volume-icon" aria-hidden="true">🔊</span>
               <input type="range" id="volume-control" class="slider" min="0" max="100" value="40" step="5" aria-label="Volume control">
               <span id="volume-percentage">40%</span>
+              <button id="admin-lock-button" class="admin-lock-icon" aria-label="Admin Controls" title="Admin Controls">
+                <svg viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M18,8h-1V6c0-2.76-2.24-5-5-5S7,3.24,7,6v2H6c-1.1,0-2,0.9-2,2v10c0,1.1,0.9,2,2,2h12c1.1,0,2-0.9,2-2V10C20,8.9,19.1,8,18,8z M12,17c-1.1,0-2-0.9-2-2s0.9-2,2-2s2,0.9,2,2S13.1,17,12,17z M15.1,8H8.9V6c0-1.71,1.39-3.1,3.1-3.1s3.1,1.39,3.1,3.1V8z"/>
+                </svg>
+              </button>
               <a href="./control_panel/" class="settings-icon" target="_blank" rel="noopener noreferrer" aria-label="Control Panel">
                 <svg viewBox="0 0 24 24" fill="currentColor">
                   <path d="M19.14,12.94c0.04-0.3,0.06-0.61,0.06-0.94c0-0.32-0.02-0.64-0.07-0.94l2.03-1.58c0.18-0.14,0.23-0.41,0.12-0.61 l-1.92-3.32c-0.12-0.22-0.37-0.29-0.59-0.22l-2.39,0.96c-0.5-0.38-1.03-0.7-1.62-0.94L14.4,2.81c-0.04-0.24-0.24-0.41-0.48-0.41 h-3.84c-0.24,0-0.43,0.17-0.47,0.41L9.25,5.35C8.66,5.59,8.12,5.92,7.63,6.29L5.24,5.33c-0.22-0.08-0.47,0-0.59,0.22L2.74,8.87 C2.62,9.08,2.66,9.34,2.86,9.48l2.03,1.58C4.84,11.36,4.8,11.69,4.8,12s0.02,0.64,0.07,0.94l-2.03,1.58 c-0.18,0.14-0.23,0.41-0.12,0.61l1.92,3.32c0.12,0.22,0.37,0.29,0.59,0.22l2.39-0.96c0.5,0.38,1.03,0.7,1.62,0.94l0.36,2.54 c0.05,0.24,0.24,0.41,0.48,0.41h3.84c0.24,0,0.44-0.17,0.47-0.41l0.36-2.54c0.59-0.24,1.13-0.56,1.62-0.94l2.39,0.96 c0.22,0.08,0.47,0,0.59-0.22l1.92-3.32c0.12-0.22,0.07-0.47-0.12-0.61L19.14,12.94z M12,15.6c-1.98,0-3.6-1.62-3.6-3.6 s1.62-3.6,3.6-3.6s3.6,1.62,3.6,3.6S13.98,15.6,12,15.6z"/>
@@ -45,6 +81,34 @@
           </div>
       </div>
       <div id="last_played_songs"></div>
+      </div>
+    </div>
+    <!-- Admin Controls Section -->
+    <div id="admin-controls-section" class="admin-controls-section hidden">
+      <div class="admin-controls-grid">
+        <button class="admin-control-btn" data-endpoint="/api/music/skip" data-label="Skip Song" title="Skip Song">
+          <svg class="admin-btn-icon" viewBox="0 0 24 24" fill="currentColor" style="transform: scaleX(-1);">
+            <path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/>
+          </svg>
+        </button>
+        <button id="music-toggle-btn" class="admin-control-btn" data-endpoint="/api/music/toggle" data-label="Toggle Music" title="Toggle Music">
+          <svg class="admin-btn-icon music-on" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/>
+          </svg>
+        </button>
+        <button id="ambience-toggle-btn" class="admin-control-btn" data-endpoint="/api/ambience/toggle" data-label="Toggle Ambience" title="Toggle Ambience">
+          <svg class="admin-btn-icon ambience-on" viewBox="0 0 24 24" fill="none">
+            <!-- Cloud shape -->
+            <path d="M19.35 10.04C18.67 6.59 15.64 4 12 4c-1.48 0-2.85.43-4.01 1.17C6.65 5.7 5.31 6.96 4.56 8.58 2.61 9.08 1 10.88 1 13c0 2.76 2.24 5 5 5h13c2.21 0 4-1.79 4-4 0-2.05-1.54-3.73-3.54-3.96-.03-.32-.07-.64-.11-.96z" fill="currentColor"/>
+            <!-- Rain drops in green -->
+            <line x1="8" y1="18" x2="8" y2="21" stroke="#a0ff50" stroke-width="1.5" stroke-linecap="round"/>
+            <line x1="12" y1="18" x2="12" y2="22" stroke="#a0ff50" stroke-width="1.5" stroke-linecap="round"/>
+            <line x1="16" y1="18" x2="16" y2="21" stroke="#a0ff50" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+        </button>
+        <button class="admin-control-btn" data-endpoint="/api/clips/now" data-label="Cue Clip" title="Cue Clip">
+          <img class="admin-btn-icon admin-btn-egg" src="/MorphOvum.gif" alt="Clip">
+        </button>
       </div>
     </div>
     <div class="song-history-section">
@@ -58,478 +122,16 @@
   </div>
 </div>
 <div id="copy-toast">Copied to clipboard!</div>
-<script>
-  const playButton = document.querySelector('.play.button')
-  const audioPlayer = new Audio()
-  const volumeControl = document.getElementById('volume-control')
-  const volumeIcon = document.getElementById('volume-icon')
-  const volumePercentage = document.getElementById('volume-percentage')
-  const copyToast = document.getElementById('copy-toast')
-  
-  // Audio visualization setup
-  const canvas = document.getElementById('spectrum-canvas')
-  const canvasCtx = canvas.getContext('2d')
-  let audioContext = null
-  let analyser = null
-  let dataArray = null
-  let bufferLength = null
-  let animationId = null
-  let peakValues = [] // For peak hold mode
-  
-  // Set canvas size
-  canvas.width = canvas.offsetWidth || 600
-  canvas.height = canvas.offsetHeight || 120
-  
-  // Load saved volume from localStorage or use default
-  const savedVolume = localStorage.getItem('morphovum_volume')
-  const initialVolume = savedVolume ? parseInt(savedVolume) : 40
-  audioPlayer.volume = (initialVolume / 100) ** 2  // Quadratic curve for more natural volume feel
-  volumeControl.value = initialVolume
-  updateVolumeDisplay(initialVolume)
-  
-  // Initialize Web Audio API for visualization
-  function initAudioContext() {
-    if (audioContext) return
-    
-    audioContext = new (window.AudioContext || window.webkitAudioContext)()
-    analyser = audioContext.createAnalyser()
-    analyser.fftSize = 512
-    analyser.smoothingTimeConstant = 0.8
-    analyser.minDecibels = -90
-    analyser.maxDecibels = -10
-    
-    const source = audioContext.createMediaElementSource(audioPlayer)
-    source.connect(analyser)
-    analyser.connect(audioContext.destination)
-    
-    bufferLength = analyser.frequencyBinCount
-    dataArray = new Uint8Array(bufferLength)
-    
-    // Initialize peak values array
-    peakValues = new Array(64).fill(0)
-  }
-  
-  // Get frequency data with peak hold
-  function getFrequencyData() {
-    analyser.getByteFrequencyData(dataArray)
-    
-    const barCount = 64
-    const values = []
-    const nyquist = audioContext.sampleRate / 2
-    
-    // Balanced semi-log: 40% linear + 60% log with peak hold
-    const minFreq = 30
-    const maxFreq = Math.min(12000, nyquist)
-    
-    for (let i = 0; i < barCount; i++) {
-      const t = i / barCount
-      const linearPos = minFreq + t * (maxFreq - minFreq)
-      const logPos = minFreq * Math.pow(maxFreq / minFreq, t)
-      const freq = linearPos * 0.4 + logPos * 0.6
-      
-      const binIndex = Math.floor(freq / nyquist * bufferLength)
-      const dataIndex = Math.min(binIndex, bufferLength - 1)
-      
-      let sum = 0
-      const avgRange = 2
-      for (let j = -avgRange; j <= avgRange; j++) {
-        const idx = Math.max(0, Math.min(bufferLength - 1, dataIndex + j))
-        sum += dataArray[idx]
-      }
-      const avgValue = sum / (avgRange * 2 + 1)
-      const freqBoost = 1 + (t * 0.35)
-      const currentValue = avgValue * freqBoost
-      
-      // Update peak with decay
-      if (currentValue > peakValues[i]) {
-        peakValues[i] = currentValue
-      } else {
-        peakValues[i] *= 0.985 // Much slower decay - peaks stay longer
-      }
-      
-      values.push(currentValue)
-    }
-    
-    return values
-  }
-  
-  // Draw spectrum visualization
-  function drawSpectrum() {
-    if (!analyser || !playing) {
-      // Draw idle state with dim bars
-      canvasCtx.fillStyle = '#1a1b1e'
-      canvasCtx.fillRect(0, 0, canvas.width, canvas.height)
-      
-      const barCount = 64
-      // Adjust gap based on canvas width (tighter on smaller screens)
-      const gapRatio = canvas.width < 500 ? 0.15 : 0.2
-      const barWidth = (canvas.width / barCount) * (1 - gapRatio)
-      const gap = (canvas.width / barCount) * gapRatio
-      
-      for (let i = 0; i < barCount; i++) {
-        const x = i * (barWidth + gap)
-        const barHeight = 8
-        const y = canvas.height - barHeight
-        
-        // Dim light gray bars for idle state
-        const gradient = canvasCtx.createLinearGradient(0, y, 0, canvas.height)
-        gradient.addColorStop(0, 'rgba(139, 157, 195, 0.3)')
-        gradient.addColorStop(1, 'rgba(184, 197, 214, 0.3)')
-        canvasCtx.fillStyle = gradient
-        canvasCtx.fillRect(x, y, barWidth, barHeight)
-      }
-      
-      if (playing) {
-        animationId = requestAnimationFrame(drawSpectrum)
-      }
-      return
-    }
-    
-    animationId = requestAnimationFrame(drawSpectrum)
-    
-    canvasCtx.fillStyle = '#1a1b1e'
-    canvasCtx.fillRect(0, 0, canvas.width, canvas.height)
-    
-    const values = getFrequencyData()
-    const barCount = values.length
-    
-    // Adjust gap based on canvas width (tighter on smaller screens)
-    const gapRatio = canvas.width < 500 ? 0.15 : 0.2
-    const barWidth = (canvas.width / barCount) * (1 - gapRatio)
-    const gap = (canvas.width / barCount) * gapRatio
-    
-    for (let i = 0; i < barCount; i++) {
-      const barHeight = Math.min((values[i] / 255) * canvas.height * 0.9, canvas.height * 0.95)
-      
-      const x = i * (barWidth + gap)
-      const y = canvas.height - barHeight
-      
-      // Create smooth gradient for light bars
-      const gradient = canvasCtx.createLinearGradient(0, y, 0, canvas.height)
-      const intensity = barHeight / (canvas.height * 0.9)
-      
-      // Light gray gradient - softer, more subdued
-      const topBrightness = 0.35 + (intensity * 0.55) // 35% to 90% brightness at top
-      const bottomBrightness = 0.45 + (intensity * 0.45) // 45% to 90% brightness at bottom
-      
-      // Calculate RGB values for smooth light gray gradient
-      const topR = Math.floor(107 + (108 * topBrightness))
-      const topG = Math.floor(122 + (93 * topBrightness))
-      const topB = Math.floor(146 + (69 * topBrightness))
-      
-      const midR = Math.floor(139 + (76 * bottomBrightness))
-      const midG = Math.floor(157 + (58 * bottomBrightness))
-      const midB = Math.floor(195 + (20 * bottomBrightness))
-      
-      const bottomR = Math.floor(175 + (40 * intensity))
-      const bottomG = Math.floor(190 + (25 * intensity))
-      const bottomB = Math.floor(215 + (10 * intensity))
-      
-      gradient.addColorStop(0, `rgba(${topR}, ${topG}, ${topB}, 0.9)`)
-      gradient.addColorStop(0.5, `rgba(${midR}, ${midG}, ${midB}, 0.92)`)
-      gradient.addColorStop(1, `rgba(${bottomR}, ${bottomG}, ${bottomB}, 0.95)`)
-      
-      canvasCtx.fillStyle = gradient
-      canvasCtx.fillRect(x, y, barWidth, barHeight)
-      
-      // Add subtle glow for high intensity
-      if (intensity > 0.65) {
-        canvasCtx.shadowBlur = 8 + (intensity * 6)
-        canvasCtx.shadowColor = `rgba(184, 197, 214, ${0.4 + intensity * 0.4})`
-        canvasCtx.fillRect(x, y, barWidth, barHeight)
-        canvasCtx.shadowBlur = 0
-      }
-      
-      // Draw peak hold indicator in lime green
-      if (peakValues[i] > 0) {
-        const peakHeight = Math.min((peakValues[i] / 255) * canvas.height * 0.9, canvas.height * 0.95)
-        const peakY = canvas.height - peakHeight
-        
-        canvasCtx.fillStyle = '#a0ff50'
-        canvasCtx.fillRect(x, peakY - 2, barWidth, 3)
-        
-        // Glow on peak
-        canvasCtx.shadowBlur = 6
-        canvasCtx.shadowColor = 'rgba(160, 255, 80, 0.8)'
-        canvasCtx.fillRect(x, peakY - 2, barWidth, 3)
-        canvasCtx.shadowBlur = 0
-      }
-    }
-  }
-  
-
-  function connectWebSocket() {
-      var loc = window.location, new_uri;
-      if (loc.protocol === "https:") {
-        new_uri = "wss:";
-      } else {
-        new_uri = "ws:";
-      }
-      new_uri += "//" + loc.host + loc.pathname + 'notify';
-    
-      const ws = new WebSocket(new_uri)
-  
-      ws.addEventListener('message', (event) => {
-        switch (event.data) {
-          case 'music_changed':
-          case 'music_paused':
-            updateCurrentTrack()
-            buildPlaylist()
-            return
-          case 'ambience_changed':
-          case 'ambience_paused':
-            updateCurrentAmbience()
-            return
-        }
-      })
-      ws.addEventListener("close", () => {
-    connectWebSocket(); // Attempt to reconnect after connection closure
-      });
-
-      ws.addEventListener("error", (error) => {
-    connectWebSocket(); // Attempt to reconnect on error
-      });
-  }
-
-  connectWebSocket(); 
-
-  const audio_resource = './listen.mp3'
-  
-  // Keyboard shortcuts
-  document.addEventListener('keydown', function(e) {
-    // Ignore if typing in an input field
-    if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
-      return
-    }
-    
-    switch(e.key) {
-      case ' ': // Space - play/pause
-        e.preventDefault()
-        playButton.click()
-        break
-      case 'ArrowUp': // Arrow Up - volume up
-        e.preventDefault()
-        const newVolumeUp = Math.min(100, parseInt(volumeControl.value) + 5)
-        volumeControl.value = newVolumeUp
-        audioPlayer.volume = (newVolumeUp / 100) ** 2  // Quadratic curve for more natural volume feel
-        updateVolumeDisplay(newVolumeUp)
-        localStorage.setItem('morphovum_volume', newVolumeUp)
-        break
-      case 'ArrowDown': // Arrow Down - volume down
-        e.preventDefault()
-        const newVolumeDown = Math.max(0, parseInt(volumeControl.value) - 5)
-        volumeControl.value = newVolumeDown
-        audioPlayer.volume = (newVolumeDown / 100) ** 2  // Quadratic curve for more natural volume feel
-        updateVolumeDisplay(newVolumeDown)
-        localStorage.setItem('morphovum_volume', newVolumeDown)
-        break
-      case 'm':
-      case 'M': // M - mute/unmute
-        e.preventDefault()
-        volumeIcon.click()
-        break
-    }
-  })
-
-  let playing = false
-
-  playButton.addEventListener('click', () => {
-    const element = document.getElementById('play_button');
-    if (!playing) {
-      // Initialize audio context on user interaction (required by browsers)
-      initAudioContext()
-      if (audioContext.state === 'suspended') {
-        audioContext.resume()
-      }
-      
-      audioPlayer.src = `${audio_resource}?${Date.now()}`
-      audioPlayer.load()
-      audioPlayer.play()
-      playing = true
-      element.innerHTML = '&#x23f8;';
-      element.classList.remove('playing-icon');
-      element.classList.add('paused-icon');
-      
-      // Start visualization
-      drawSpectrum()
-      return
-    }
-
-    audioPlayer.pause()
-    element.innerHTML = '&#9654;';
-    element.classList.remove('paused-icon');
-    element.classList.add('playing-icon');
-    playing = false
-    
-    // Stop visualization animation
-    if (animationId) {
-      cancelAnimationFrame(animationId)
-      animationId = null
-    }
-    
-    // Draw idle state
-    drawSpectrum()
-  })
-
-  function updateCurrentTrack() {
-    fetch('./api/music/currenttrack')
-      .then(response => response.json())
-      .then(json => {
-        const spectrumSongLabel = document.getElementById('spectrum-song-label')
-        
-        if (json.data.is_playing) {
-          spectrumSongLabel.textContent = '♫ ' + json.msg
-        } else {
-          spectrumSongLabel.textContent = ''
-        }
-      })
-  }
-
-  function updateCurrentAmbience() {
-    fetch('./api/ambience/currenttrack')
-      .then(response => response.json())
-      .then(json => {
-        const spectrumAmbienceLabel = document.getElementById('spectrum-ambience-label')
-        
-	if (json.data.is_playing) {
-          spectrumAmbienceLabel.textContent = '☮ ' + json.msg
-        } else {
-          spectrumAmbienceLabel.textContent = ''
-        }
-      })
-  }
-  
-
-  // Update volume icon based on level
-  function updateVolumeDisplay(value) {
-    const volume = parseInt(value)
-    volumePercentage.textContent = volume + '%'
-    
-    // Update icon based on volume level
-    if (volume === 0) {
-      volumeIcon.textContent = '🔇'
-    } else if (volume < 33) {
-      volumeIcon.textContent = '🔉'
-    } else if (volume < 66) {
-      volumeIcon.textContent = '🔊'
-    } else {
-      volumeIcon.textContent = '🔊'
-    }
-    
-    // Update slider background using CSS variable (works in Firefox)
-    const percentage = volume
-    volumeControl.style.setProperty('--volume-percentage', percentage + '%')
-  }
-  
-  // Volume control handler with Firefox delay fix
-  function handleVolumeChange(e) {
-    // Use setTimeout to ensure Firefox has updated the value
-    setTimeout(() => {
-      const value = volumeControl.value
-      audioPlayer.volume = (value / 100) ** 2  // Quadratic curve for more natural volume feel
-      updateVolumeDisplay(value)
-      localStorage.setItem('morphovum_volume', value)
-    }, 0)
-  }
-  
-  volumeControl.addEventListener("input", handleVolumeChange)
-  volumeControl.addEventListener("change", handleVolumeChange)
-  volumeControl.addEventListener("click", handleVolumeChange)
-  
-  // Click volume icon to mute/unmute
-  volumeIcon.addEventListener('click', function() {
-    if (audioPlayer.volume > 0) {
-      volumeIcon.dataset.previousVolume = volumeControl.value
-      volumeControl.value = 0
-      audioPlayer.volume = 0
-      updateVolumeDisplay(0)
-      localStorage.setItem('morphovum_volume', '0')
-    } else {
-      const previousVolume = volumeIcon.dataset.previousVolume || '40'
-      volumeControl.value = previousVolume
-      audioPlayer.volume = (previousVolume / 100) ** 2  // Quadratic curve for more natural volume feel
-      updateVolumeDisplay(previousVolume)
-      localStorage.setItem('morphovum_volume', previousVolume)
-    }
-  })
-  
-
-  // Show toast notification
-  function showToast(message) {
-    copyToast.textContent = message
-    copyToast.classList.add('show')
-    setTimeout(() => {
-      copyToast.classList.remove('show')
-    }, 2000)
-  }
-  
-  // Copy text to clipboard
-  function copyToClipboard(text, element) {
-    navigator.clipboard.writeText(text).then(() => {
-      showToast('Copied to clipboard!')
-      element.classList.add('copied')
-      setTimeout(() => {
-        element.classList.remove('copied')
-      }, 500)
-    }).catch(err => {
-      console.error('Failed to copy:', err)
-      showToast('Failed to copy')
-    })
-  }
-
-  function buildPlaylist() {
-    fetch('./api/music/history')
-      .then(response => response.json())
-      .then(json => {
-        const listItems = json.data.reverse().slice(1).map(track => {
-          const li = document.createElement('li')
-          li.className = 'track-list__track'
-          
-          const trackText = document.createElement('span')
-          trackText.className = 'track-text'
-          trackText.textContent = track
-          
-          const copyIcon = document.createElement('span')
-          copyIcon.className = 'track-copy-icon'
-          copyIcon.innerHTML = '📋'
-          copyIcon.setAttribute('aria-label', 'Copy')
-          
-          li.appendChild(trackText)
-          li.appendChild(copyIcon)
-          
-          // Click to copy functionality
-          li.addEventListener('click', function() {
-            copyToClipboard(track, li)
-          })
-          
-          return li
-        })
-        const trackList = document.querySelector('.track-list')
-        trackList.innerHTML = '';
-
-        const trackListEnding = trackList.querySelector('br')
-
-        listItems.forEach(li => {
-          trackList.insertBefore(li, trackListEnding)
-        })
-      })
-  }
-
-  (() => { // init app
-    updateCurrentTrack()
-    updateCurrentAmbience()
-    buildPlaylist()
-    
-    // Draw initial idle spectrum
-    drawSpectrum()
-    
-    // Handle window resize
-    window.addEventListener('resize', () => {
-      canvas.width = canvas.offsetWidth || 600
-      canvas.height = canvas.offsetHeight || 120
-      drawSpectrum()
-    })
-  })()
-</script>
+<!-- Admin Password Modal -->
+<div id="admin-password-modal" class="admin-modal-overlay hidden">
+  <div class="admin-modal-content">
+    <input type="password" id="admin-password-input" class="admin-modal-input" placeholder="Password">
+    <div id="admin-modal-error" class="admin-modal-error hidden"></div>
+    <div class="admin-modal-buttons">
+      <button id="admin-modal-cancel" class="admin-modal-btn admin-modal-btn-secondary">Cancel</button>
+      <button id="admin-modal-submit" class="admin-modal-btn admin-modal-btn-primary">Unlock</button>
+    </div>
+  </div>
+</div>
 </body>
 </html>
