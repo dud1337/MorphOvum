@@ -153,6 +153,14 @@ def web_ui_adder(api):
     api.add_resource(WebUI_cp_js, '/control_panel/control_panel.js')
     api.add_resource(WebUI_json, '/control_panel/api_data.json')
     api.add_resource(WebUI_favicon, '/favicon.ico')
+    # JavaScript modules
+    api.add_resource(WebUI_js_main, '/js/main.js')
+    api.add_resource(WebUI_js_utils, '/js/utils.js')
+    api.add_resource(WebUI_js_websocket, '/js/websocket.js')
+    api.add_resource(WebUI_js_visualizer, '/js/visualizer.js')
+    api.add_resource(WebUI_js_audio_player, '/js/audio-player.js')
+    api.add_resource(WebUI_js_track_manager, '/js/track-manager.js')
+    api.add_resource(WebUI_js_admin_controls, '/js/admin-controls.js')
 
 class WebUI_index(Resource):
     def get(self):
@@ -218,4 +226,53 @@ class WebUI_favicon(Resource):
         with open('./www/favicon.ico', 'rb') as f:
             response = make_response(f.read())
         response.headers['Content-Type'] = 'image/x-icon'
+        return response
+
+class WebUI_js_main(Resource):
+    def get(self):
+        with open('./www/js/main.js') as f:
+            response = make_response(f.read())
+        response.headers['Content-Type'] = 'application/javascript'
+        return response
+
+class WebUI_js_utils(Resource):
+    def get(self):
+        with open('./www/js/utils.js') as f:
+            response = make_response(f.read())
+        response.headers['Content-Type'] = 'application/javascript'
+        return response
+
+class WebUI_js_websocket(Resource):
+    def get(self):
+        with open('./www/js/websocket.js') as f:
+            response = make_response(f.read())
+        response.headers['Content-Type'] = 'application/javascript'
+        return response
+
+class WebUI_js_visualizer(Resource):
+    def get(self):
+        with open('./www/js/visualizer.js') as f:
+            response = make_response(f.read())
+        response.headers['Content-Type'] = 'application/javascript'
+        return response
+
+class WebUI_js_audio_player(Resource):
+    def get(self):
+        with open('./www/js/audio-player.js') as f:
+            response = make_response(f.read())
+        response.headers['Content-Type'] = 'application/javascript'
+        return response
+
+class WebUI_js_track_manager(Resource):
+    def get(self):
+        with open('./www/js/track-manager.js') as f:
+            response = make_response(f.read())
+        response.headers['Content-Type'] = 'application/javascript'
+        return response
+
+class WebUI_js_admin_controls(Resource):
+    def get(self):
+        with open('./www/js/admin-controls.js') as f:
+            response = make_response(f.read())
+        response.headers['Content-Type'] = 'application/javascript'
         return response
