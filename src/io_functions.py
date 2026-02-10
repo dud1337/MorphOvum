@@ -238,6 +238,9 @@ class InputHandler:
             mp.stop()
             status = 'stopped'
         else:
+            # Shuffle the playlist when toggling on
+            ml = getattr(self.audio_players, 'ml_' + music_or_ambience)
+            player_backend.media_list_shuffle(ml)
             mp.play()
             status = 'playing'
         return self.make_output_data(f'{music_or_ambience} is {status}')
